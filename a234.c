@@ -41,7 +41,7 @@ int NombreCles (Arbre234 a)
   for (size_t i = 0; i < a->t; i++) {
     nb_cles = NombreCles(a->fils[i]);
   }
-  //cas de bae : ajout des cles du noeud courant.
+  //cas de base : ajout des cles du noeud courant.
   return nb_cles + a->cles;
 }
 
