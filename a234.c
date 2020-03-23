@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "a234.h"
+#include "file.h"
+//#include "pile.h"
 
 #define max(a,b) ((a)>(b)?(a):(b))
 
@@ -11,19 +13,33 @@ int GetIndexMax(Arbre234 a){
   return (a->t > 0 ? a->t-1 : a->t);
 }
 
-Arbre234 GetFils(Arbre234 a, int index){
-  if(a->t == 2){
-    return a->fils[index+1];
-  } else {
-    return a->fils[index];
+int GetCle(Arbre234 a, int index){
+  switch (a->t) {
+    case 2:
+      if(index >= 1) return -1;
+      return a->cles[1];
+    case 3:
+      if(index >= 2) return -1;
+      return a->cles[index];
+    case 4 :
+      return a->cles[index];
+    default:
+      return -1;
   }
 }
 
-int GetCle(Arbre234 a, int index){
-  if(a->t == 2){
-    return a->cles[index+1];
-  } else {
-    return a->cles[index];
+Arbre234 GetFils(Arbre234 a, int index){
+  switch (a->t) {
+    case 2:
+      if(index >= 2) return NULL;
+      return a->fils[index+1];
+    case 3:
+      if(index >= 3) return NULL;
+      return a->fils[index];
+    case 4 :
+      return a->fils[index];
+    default:
+      return NULL;
   }
 }
 
@@ -199,7 +215,25 @@ void Afficher_Cles_Largeur (Arbre234 a)
     un parcours en largeur
   */
 
-  return ;
+  pfile_t f = creer_file();
+  int err = enfiler(f, a);
+  while (!err && !file_vide(f)) {
+    Arbre234 n = defiler(f);
+    if (n != NULL) {
+      for (int i = 0; i < n->t && !err; i++) {
+        err = enfiler(f, GetFils(n, i)); 
+      }
+      if (err) break;
+      for (int i = 0; i < n->t-1 ; i++) {
+        printf("%d | ", GetCle(n, i));
+      }
+    }
+  }
+  printf("\n");
+  if (err || detruire_file(f)) {
+    fprintf(stderr,"Erreur avec la file (enfilement ou destruction) !\n");
+    exit(-1);
+  }
 }
 
 
