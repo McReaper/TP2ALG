@@ -163,6 +163,8 @@ Arbre234 noeud_max (Arbre234 a)
   /*
     Retourne le noeud avec la somme maximale des cles internes
   */
+  int somme_max = 0;
+  Arbre234 noeud_max = a;
 
   return NULL ;
 }
