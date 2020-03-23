@@ -2,14 +2,14 @@
 #define MAX_PILE_SIZE       32
 
 
-union Data {
+typedef union data {
   int entier;
   Arbre234 noeud;
-};
+} *Data;
 
 typedef struct {
   int sommet ;
-  union Data Tab [MAX_PILE_SIZE] ;
+  Data Tab [MAX_PILE_SIZE] ;
 } pile_t, *ppile_t ;
 
 
@@ -58,10 +58,3 @@ Effets de bord: P est modifiée
 int empiler_noeud (ppile_t p, Arbre234 pn) ;
 
 int empiler_entier (ppile_t p, int pn) ;
-
-
-
-/*
-Résultat : Affichage de la pile P
-*/
-void afficher_pile(ppile_t p);

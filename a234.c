@@ -290,14 +290,9 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
      Utiliser une pile
   */
   ppile_t pile = creer_pile();
-  empiler_noeud(pile, a);
-  while(!pile_vide(pile)){
-    // Arbre234 current = depiler_noeud(pile);
-    // while(){
-    //
-    // }
-  }
-
+  // empiler_noeud(pile, a);
+  // a = depiler_noeud(pile);
+  detruire_pile(pile);
 
 
 }
@@ -363,7 +358,7 @@ int main (int argc, char **argv)
   Afficher_Cles_Largeur (a);
 
   printf ("\n==== Afficher clés triées récursivement ====\n");
-  printf("Récursif: ");
+  
   // Affichage_Cles_Noeud(a);
   Affichage_Cles_Triees_Recursive (a);
 
