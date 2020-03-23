@@ -3,8 +3,7 @@
 #include <string.h>
 
 #include "a234.h"
-#include "file.h"
-//#include "pile.h"
+#include "pile.h"
 
 #define max(a,b) ((a)>(b)?(a):(b))
 
