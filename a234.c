@@ -60,7 +60,7 @@ int NombreCles (Arbre234 a)
   //cas de récurence : appel récursif sur chacun des fils du noeud courant.
 
   for (size_t i = 0; i < a->t; i++) {
-    nb_cles = NombreCles(a->fils[getFils(a,i)]);
+    nb_cles = NombreCles(a->fils[GetCle(a,i)]);
   }
   //cas de base : ajout des cles du noeud courant.
   return nb_cles + a->t -1; //si il y a 4 noeuds il y a 3 clefs.
@@ -80,16 +80,6 @@ int CleMax (Arbre234 a)
 
 int CleMin (Arbre234 a)
 {
-<<<<<<< HEAD
-  return 0;
-  // Arbre234 current = a;
-  // Arbre234 prec = current;
-  // while (current->t != 0) {
-  //   prec = current;
-  //   current = current->fils[0];
-  // }
-  // return prec->cles[0];
-=======
   Arbre234 current = a;
   Arbre234 prec = current;
   while (current->t != 0) {
@@ -97,7 +87,6 @@ int CleMin (Arbre234 a)
     current = GetFils(current,0);
   }
   return GetCle(prec, 0);
->>>>>>> dcf0cf9f1b28055b5b53655365d6f39b50dbc85f
 
 }
 
