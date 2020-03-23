@@ -98,12 +98,14 @@ Arbre234 RechercherCle (Arbre234 a, int cle)
   Arbre234 curr_node = a;
   while(curr_node != NULL && curr_node->t != 0) {
     int nb_elems = curr_node->t - 1;
-    int position = -1;
-    for (int i = 0; i < nb_elems; i++) {
-      if (curr_node->cles[i]==cle) return curr_node;
-    }
+    int pos = 0, trouve = 0;
+    do {
+      trouve = (cle <= GetCle(curr_node, pos));
+      if (!trouve) pos++;
+    } while (pos < nb_elems && !trouve);
+    if (GetCle(curr_node, pos) == cle) return curr_node;
+    else curr_node = GetFils(curr_node, pos);
   }
-
   return NULL ;
 }
 
@@ -228,7 +230,7 @@ int main (int argc, char **argv)
   printf ("\n==== Rechercher clé ====\n") ;
 
   for (int i = 3; i < 10; i+=2) {
-    printf("Recherche clé n°%d", i);
+    printf("Recherche clé n°%d\n", i);
     afficher_arbre(RechercherCle (a, i),0);
   }
 
