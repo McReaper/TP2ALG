@@ -8,8 +8,17 @@ typedef union data {
 } *Data;
 
 typedef struct {
+  int type ; // 0 si cest un entier 1 si cest un arbre
+  union Data value;
+} value ;
+
+typedef struct {
   int sommet ;
+<<<<<<< HEAD
   Data Tab [MAX_PILE_SIZE] ;
+=======
+  value Tab [MAX_PILE_SIZE] ;
+>>>>>>> 472ed23cbdfacf77de75f534d72414608e8d2cea
 } pile_t, *ppile_t ;
 
 
@@ -58,3 +67,15 @@ Effets de bord: P est modifiée
 int empiler_noeud (ppile_t p, Arbre234 pn) ;
 
 int empiler_entier (ppile_t p, int pn) ;
+
+/*
+Résultat: 1 si le type est un noeud; 0 si c'est un entier; -1 si la pile est vide
+Données : une pile P.
+*/
+int type_sommet (ppile_t p);
+
+
+/*
+Résultat : Affichage de la pile P
+*/
+void afficher_pile(ppile_t p);
