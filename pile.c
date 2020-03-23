@@ -38,22 +38,41 @@ int pile_pleine (ppile_t p)
    }
 }
 
-Arbre234 depiler (ppile_t p)
+Arbre234 depiler_noeud (ppile_t p)
 {
   if (pile_vide(p))
     return NULL;
-  pnoeud_t noeud = p->Tab[p->sommet];
+  Arbre234 noeud = p->Tab[p->sommet].noeud;
   p->Tab[p->sommet] = NULL;
   p->sommet--;
   return noeud;
 }
 
-int empiler (ppile_t p, Arbre234 pn)
+int depiler_entier (ppile_t p)
+{
+  if (pile_vide(p))
+    return NULL;
+  int entier = p->Tab[p->sommet].entier;
+  p->Tab[p->sommet] = NULL;
+  p->sommet--;
+  return entier;
+}
+
+int empiler_noeud (ppile_t p, Arbre234 pn)
 {
   if (pile_pleine(p))
     return 1;
   p->sommet++;
-  p->Tab[p->sommet] = pn;
+  p->Tab[p->sommet].noeud = pn;
+  return 0;
+}
+
+int empiler_entier (ppile_t p, int pn)
+{
+  if (pile_pleine(p))
+    return 1;
+  p->sommet++;
+  p->Tab[p->sommet].entier = pn;
   return 0;
 }
 

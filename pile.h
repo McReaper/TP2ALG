@@ -2,9 +2,14 @@
 #define MAX_PILE_SIZE       32
 
 
+union Data {
+  int entier;
+  Arbre234 noeud;
+};
+
 typedef struct {
   int sommet ;
-  Arbre234 Tab [MAX_PILE_SIZE] ;
+  union Data Tab [MAX_PILE_SIZE] ;
 } pile_t, *ppile_t ;
 
 
@@ -41,15 +46,19 @@ Pré-condition: P est non null.
 Post-condition: supprime l'élément au sommet de P.
 Effets de bord: P est modifiée
 */
-Arbre234 depiler (ppile_t p)  ;
+Arbre234 depiler_noeud (ppile_t p) ;
 
+int depiler_entier (ppile_t p) ;
 /*
 Résultat: 1 si Erreur (pile déjà pleine); 0 sinon
 Données : une pile P.
 Post-condition: ajoute le noeud Pn au sommet de P.
 Effets de bord: P est modifiée
 */
-int empiler (ppile_t p, Arbre234 pn) ;
+int empiler_noeud (ppile_t p, Arbre234 pn) ;
+
+int empiler_entier (ppile_t p, int pn) ;
+
 
 
 /*

@@ -248,6 +248,7 @@ void Affichage_Cles_Triees_Recursive (Arbre234 a)
 
 }
 
+
 void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
 {
     /*
@@ -255,6 +256,16 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
      Cette fonction ne sera pas recursive
      Utiliser une pile
   */
+  ppile_t pile = creer_pile();
+  empiler_noeud(pile, a);
+  while(!pile_vide(pile)){
+    // Arbre234 current = depiler_noeud(pile);
+    // while(){
+    //
+    // }
+  }
+
+
 
 }
 
