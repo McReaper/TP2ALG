@@ -158,6 +158,14 @@ void AnalyseStructureArbre (Arbre234 a, int *feuilles, int *noeud2, int *noeud3,
   AnalyseStructureArbreWorker(a, feuilles, noeud2, noeud3, noeud4);
 }
 
+int sumCle (Arbre234 a) {
+  int nb_elems = a->t - 1;
+  int tot = 0;
+  for (int i = 0; i < nb_elems; i++)
+    tot += GetCle(a, i);
+  return tot;
+}
+
 Arbre234 noeud_max (Arbre234 a)
 {
   /*
