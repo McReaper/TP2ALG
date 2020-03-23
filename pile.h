@@ -12,7 +12,7 @@ union Data {
 
 typedef struct {
   int type ; // 0 si cest un entier 1 si cest un arbre
-  union Data value;
+  union Data data;
 } value ;
 
 typedef struct {

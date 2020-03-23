@@ -47,8 +47,8 @@ Arbre234 depiler_noeud (ppile_t p)
 {
   if (pile_vide(p))
     return NULL;
-  Arbre234 noeud = p->Tab[p->sommet].value.noeud;
-  p->Tab[p->sommet].value.noeud = NULL;
+  Arbre234 noeud = p->Tab[p->sommet].data.noeud;
+  p->Tab[p->sommet].data.noeud = NULL;
   p->sommet--;
   return noeud;
 }
@@ -57,8 +57,8 @@ int depiler_entier (ppile_t p)
 {
   if (pile_vide(p))
     return -1;
-  int entier = p->Tab[p->sommet].value.entier;
-  p->Tab[p->sommet].value.entier = 0;
+  int entier = p->Tab[p->sommet].data.entier;
+  p->Tab[p->sommet].data.entier = 0;
   p->sommet--;
   return entier;
 }
@@ -68,7 +68,7 @@ int empiler_noeud (ppile_t p, Arbre234 pn)
   if (pile_pleine(p))
     return 1;
   p->sommet++;
-  p->Tab[p->sommet].value.noeud = pn;
+  p->Tab[p->sommet].data.noeud = pn;
   p->Tab[p->sommet].type = TYPE_ARBRE;
   return 0;
 }
@@ -78,7 +78,7 @@ int empiler_entier (ppile_t p, int pn)
   if (pile_pleine(p))
     return 1;
   p->sommet++;
-  p->Tab[p->sommet].value.entier = pn;
+  p->Tab[p->sommet].data.entier = pn;
   p->Tab[p->sommet].type = TYPE_ENTIER;
   return 0;
 }
@@ -94,7 +94,7 @@ void afficher_pile(ppile_t p){
 
     printf(" ------\n");
     for (int i = p->sommet; i >= 0; i--) {
-      printf("| %4d |", p->Tab[i].value.entier );
+      printf("| %4d |", p->Tab[i].data.entier );
       if (i == p->sommet){
         printf("<---- sommet (%d)",p->sommet);
       }
