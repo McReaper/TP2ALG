@@ -209,7 +209,7 @@ void Affichage_Cles_Triees_Recursive (Arbre234 a)
      Cette fonction sera recursive
   */
 
-  if (a != NULL && a->t !=0) {
+  if (a->t !=0) {
 
     Affichage_Cles_Triees_Recursive(GetFils(a,0));
 
