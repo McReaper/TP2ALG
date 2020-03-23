@@ -166,6 +166,9 @@ void AnalyseStructureArbreWorker (Arbre234 a, int *feuilles, int *noeud2, int *n
 
 void AnalyseStructureArbre (Arbre234 a, int *feuilles, int *noeud2, int *noeud3, int *noeud4)
 {
+  /*
+     calculer le nombre de feuilles, de 2-noeuds, 3-noeuds,et 4-noeuds
+  */
   *feuilles = 0;
   *noeud2 = 0;
   *noeud3 = 0;
@@ -312,6 +315,23 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
 }
 
 
+void detruire_arbre(Arbre234 a){
+
+  /*
+  Libération en mémoire de l'arbre
+  */
+
+  if(a != NULL) {
+    detruire_arbre(GetFils(a,0));
+    detruire_arbre(GetFils(a,1));
+    detruire_arbre(GetFils(a,2));
+    detruire_arbre(GetFils(a,3));
+    free(a);
+  }
+
+  //pas encore testé faut que j'apprenne à utiliser valgrind.
+}
+
 void Detruire_Cle (Arbre234 *a, int cle)
 {
   /*
@@ -372,7 +392,7 @@ int main (int argc, char **argv)
   Afficher_Cles_Largeur (a);
 
   printf ("\n==== Afficher clés triées récursivement ====\n");
-  
+
   // Affichage_Cles_Noeud(a);
   Affichage_Cles_Triees_Recursive (a);
 
