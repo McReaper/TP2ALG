@@ -159,6 +159,7 @@ void AnalyseStructureArbre (Arbre234 a, int *feuilles, int *noeud2, int *noeud3,
 }
 
 int sumCle (Arbre234 a) {
+  if (a == NULL) return -1;
   int nb_elems = a->t - 1;
   int tot = 0;
   for (int i = 0; i < nb_elems; i++)
@@ -166,13 +167,29 @@ int sumCle (Arbre234 a) {
   return tot;
 }
 
+Arbre234 noeud_max_worker(Arbre234 max, Arbre234 a);
+Arbre234 nmw (Arbre234 max, Arbre234 a) {
+  return noeud_max_worker(max, a);
+}
+Arbre234 noeud_max_worker(Arbre234 max, Arbre234 a) {
+  if (a == NULL) {
+    return max;
+  } else if (EstFeuille(a)) {
+    if (sumCle(a) > sumCle(max)) return a;
+    else return max;
+  } else {
+    Arbre234 comp = max;
+    if (sumCle(a) > sumCle(max)) comp = a;
+    return (nmw(comp, nmw(nmw(a->fils[0], a->fils[1]), nmw(a->fils[2], a->fils[3]))));
+  }
+}
+
 Arbre234 noeud_max (Arbre234 a)
 {
   /*
     Retourne le noeud avec la somme maximale des cles internes
   */
-
-  return NULL ;
+  return noeud_max_worker(a, a);
 }
 
 
