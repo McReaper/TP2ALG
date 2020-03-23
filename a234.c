@@ -47,29 +47,34 @@ int NombreCles (Arbre234 a)
 
 int GetIndexMax(Arbre234 a){
   //Renvoie l'index du plus grand fils dans un noeud => si 0 alors type noeud = 0
-  return (a->t > 0? a->t-1 , a->t);
+  return (a->t > 0 ? a->t-1 : a->t);
 }
 
 int CleMax (Arbre234 a)
 {
-  Arbre234 current = a;
-  Arbre234 prec = current;
-  while(GetIndexMax(current) != 0){
-    prec = current;
-    current = current->fils[GetIndexMax(current)];
-  }
-  return prec->cle[GetCleMax(prec)];
+  return 0;
+  // Arbre234 current = a;
+  // Arbre234 prec = current;
+  // printf("Index max = %d \n", GetIndexMax(current));
+  // while(GetIndexMax(current) != 0){
+  //   prec = current;
+  //   current = current->fils[GetIndexMax(current)];
+  // }
+  // printf("index = %d \n", a->t-2);
+  // return prec->cles[a->t-2];
+
 }
 
 int CleMin (Arbre234 a)
 {
-  Arbre234 current = a;
-  Arbre234 prec = current;
-  while(current->t != 0){
-    prec = current;
-    current = current->fils[0];
-  }
-  return prec->cle[0];
+  return 0
+  // Arbre234 current = a;
+  // Arbre234 prec = current;
+  // while (current->t != 0) {
+  //   prec = current;
+  //   current = current->fils[0];
+  // }
+  // return prec->cles[0];
 
 }
 
@@ -90,18 +95,48 @@ Arbre234 RechercherCle (Arbre234 a, int cle)
   return NULL ;
 }
 
-void AnalyseStructureArbre (Arbre234 a, int *feuilles, int *noeud2, int *noeud3, int *noeud4)
-{
-  /*
-     calculer le nombre de feuilles, de 2-noeuds, 3-noeuds,et 4-noeuds
-  */
+int EstFeuille(Arbre234 a){
+  int res = 0;
   if(a->t != 0){
     int i = 0;
     while(i != GetIndexMax(a)){
-      AnalyseStructureArbre(a->fils[i], feuilles, noeud2, noeud3, noeud4);
+      if(a->fils[i]->t != 0){
+        return 0;
+      }
       i++;
     }
+    res = 1;
   }
+  return res;
+}
+
+
+void AnalyseStructureArbre (Arbre234 a, int *feuilles, int *noeud2, int *noeud3, int *noeud4)
+{
+  // /*
+  //    calculer le nombre de feuilles, de 2-noeuds, 3-noeuds,et 4-noeuds
+  // */
+  // if(a->t != 0){
+  //   //On ajoute 1 a sont type
+  //   if(EstFeuille(a) == 0){
+  //     if(a->t == 2){
+  //       noeud2++;
+  //     } else if(a->t == 3){
+  //       noeud3++;
+  //     } else {
+  //       noeud4++;
+  //     }
+  //     int i = 0;
+  //     //On parcour tout ses enfants pour les analyser
+  //     while(i != GetIndexMax(a)){
+  //       AnalyseStructureArbre(a->fils[i], feuilles, noeud2, noeud3, noeud4);
+  //       i++;
+  //     }
+  //   } else {
+  //     //Cest une feuille on incremente feuilles
+  //     feuilles++;
+  //   }
+  // }
 }
 
 Arbre234 noeud_max (Arbre234 a)
@@ -168,7 +203,8 @@ int main (int argc, char **argv)
 
   a = lire_arbre (argv [1]) ;
 
-  printf ("==== Afficher arbre ====\n") ;
+  printf ("\n==== Afficher arbre ====\n") ;
+
   afficher_arbre (a, 0) ;
 
   printf ("\n==== Infos Arbres ====\n") ;
