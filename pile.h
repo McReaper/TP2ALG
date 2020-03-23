@@ -4,7 +4,7 @@
 
 typedef struct {
   int sommet ;
-  pnoeud_t Tab [MAX_PILE_SIZE] ;
+  Arbre234 Tab [MAX_PILE_SIZE] ;
 } pile_t, *ppile_t ;
 
 

@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "a234.h"
+#include "pile.h"
 
 #define max(a,b) ((a)>(b)?(a):(b))
 
@@ -173,6 +174,11 @@ Arbre234 noeud_max (Arbre234 a)
   */
   int somme_max = 0;
   Arbre234 noeud_max = a;
+  ppile_t pile = creer_pile();
+  empiler(pile, a);
+  while(pile_vide(pile)){
+
+  }
 
   return NULL ;
 }
