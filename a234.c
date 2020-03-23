@@ -112,7 +112,7 @@ int EstFeuille(Arbre234 a){
   if(a->t != 0){
     int i = 0;
     while(i != GetIndexMax(a)){
-      if(a->fils[i]->t != 0){
+      if(GetFils(a,i)->t != 0){
         return 0;
       }
       i++;
