@@ -41,7 +41,7 @@ Pré-condition: P est non null.
 Post-condition: supprime l'élément au sommet de P.
 Effets de bord: P est modifiée
 */
-pnoeud_t depiler (ppile_t p)  ;
+Arbre234 depiler (ppile_t p)  ;
 
 /*
 Résultat: 1 si Erreur (pile déjà pleine); 0 sinon
@@ -49,7 +49,7 @@ Données : une pile P.
 Post-condition: ajoute le noeud Pn au sommet de P.
 Effets de bord: P est modifiée
 */
-int empiler (ppile_t p, pnoeud_t pn) ;
+int empiler (ppile_t p, Arbre234 pn) ;
 
 
 /*

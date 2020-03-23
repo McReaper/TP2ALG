@@ -38,7 +38,7 @@ int pile_pleine (ppile_t p)
    }
 }
 
-pnoeud_t depiler (ppile_t p)
+Arbre234 depiler (ppile_t p)
 {
   if (pile_vide(p))
     return NULL;
@@ -48,7 +48,7 @@ pnoeud_t depiler (ppile_t p)
   return noeud;
 }
 
-int empiler (ppile_t p, pnoeud_t pn)
+int empiler (ppile_t p, Arbre234 pn)
 {
   if (pile_pleine(p))
     return 1;
