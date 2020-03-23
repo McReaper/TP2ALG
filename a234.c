@@ -95,13 +95,14 @@ Arbre234 RechercherCle (Arbre234 a, int cle)
      rechercher si la cle "cle" est presente dans
      l'arbre a. Si oui, retourne le noeud ou se trouve la cle.
   */
-  // Arbre234 curr_node = a;
-  // while(curr_node != NULL && curr_node->t != 0) {
-  //   int nb_elems = curr_node->t - 1;
-  //   for (int i = 0; i < nb_elems; i++) {
-  //     if (curr_node->cles[i]==cle) return curr_node;
-  //   }
-  // }
+  Arbre234 curr_node = a;
+  while(curr_node != NULL && curr_node->t != 0) {
+    int nb_elems = curr_node->t - 1;
+    int position = -1;
+    for (int i = 0; i < nb_elems; i++) {
+      if (curr_node->cles[i]==cle) return curr_node;
+    }
+  }
 
   return NULL ;
 }
