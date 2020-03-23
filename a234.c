@@ -166,7 +166,7 @@ int main (int argc, char **argv)
 
   printf ("\n==== Infos Arbres ====\n") ;
 
-  printf("Nombre de clés : %d\n",NombreCles (a));
+  // printf("Nombre de clés : %d\n",NombreCles (a));
   printf("Clé maximale : %d\n",CleMax (a));
   printf("Clé minimale : %d\n",CleMin (a));
 
@@ -206,7 +206,6 @@ int main (int argc, char **argv)
     Detruire_Cle (&a, i);
     afficher_arbre(a,0);
   }
->>>>>>> cda14194e3c35a97a73bf7e98e97c789fd6380a0
 
   afficher_arbre (a, 0) ;
   // int nbclef = NombreCles(a);
