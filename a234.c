@@ -42,7 +42,7 @@ int NombreCles (Arbre234 a)
     nb_cles = NombreCles(a->fils[i]);
   }
   //cas de base : ajout des cles du noeud courant.
-  return nb_cles + a->cles;
+  return nb_cles + a->t -1; //si il y a 4 noeuds il y a 3 clefs.
 }
 
 int CleMax (Arbre234 a)
@@ -147,5 +147,7 @@ int main (int argc, char **argv)
   printf ("==== Afficher arbre ====\n") ;
 
   afficher_arbre (a, 0) ;
+  // int nbclef = NombreCles(a);
+  // printf("nombres de clefs dans l'arbre a : %d\n",nbclef);
 
 }
