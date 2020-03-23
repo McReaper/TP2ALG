@@ -45,22 +45,32 @@ int NombreCles (Arbre234 a)
   return nb_cles + a->t -1; //si il y a 4 noeuds il y a 3 clefs.
 }
 
+int GetIndexMax(Arbre234 a){
+  //Renvoie l'index du plus grand fils dans un noeud => si 0 alors type noeud = 0
+  return (a->t > 0? a->t-1 , a->t);
+}
+
 int CleMax (Arbre234 a)
 {
-  /*
-     plus grande cle de l'arbre a
-  */
-
-  return 0 ;
+  Arbre234 current = a;
+  Arbre234 prec = current;
+  while(GetIndexMax(current) != 0){
+    prec = current;
+    current = current->fils[GetIndexMax(current)];
+  }
+  return prec->cle[GetCleMax(prec)];
 }
 
 int CleMin (Arbre234 a)
 {
-  /*
-     Retourne plus petite cle de l'arbre a
-  */
+  Arbre234 current = a;
+  Arbre234 prec = current;
+  while(current->t != 0){
+    prec = current;
+    current = current->fils[0];
+  }
+  return prec->cle[0];
 
-  return 0 ;
 }
 
 Arbre234 RechercherCle (Arbre234 a, int cle)
@@ -78,6 +88,13 @@ void AnalyseStructureArbre (Arbre234 a, int *feuilles, int *noeud2, int *noeud3,
   /*
      calculer le nombre de feuilles, de 2-noeuds, 3-noeuds,et 4-noeuds
   */
+  if(a->t != 0){
+    int i = 0;
+    while(i != GetIndexMax(a)){
+      AnalyseStructureArbre(a->fils[i], feuilles, noeud2, noeud3, noeud4);
+      i++;
+    }
+  }
 }
 
 Arbre234 noeud_max (Arbre234 a)
@@ -145,6 +162,51 @@ int main (int argc, char **argv)
   a = lire_arbre (argv [1]) ;
 
   printf ("==== Afficher arbre ====\n") ;
+  afficher_arbre (a, 0) ;
+
+  printf ("\n==== Infos Arbres ====\n") ;
+
+  printf("Nombre de clés : %d\n",NombreCles (a));
+  printf("Clé maximale : %d\n",CleMax (a));
+  printf("Clé minimale : %d\n",CleMin (a));
+
+  printf ("\n==== Rechercher clé ====\n") ;
+
+  Arbre234 RechercherCle (Arbre234 a, int cle);
+
+  printf ("\n==== Analyser structure arbre ====\n") ;
+
+  int feuilles, noeud2, noeud3, noeud4;
+  AnalyseStructureArbre (a, &feuilles, &noeud2, &noeud3, &noeud4);
+  printf("Nb feuilles : %d\n", feuilles);
+  printf("Nb 2-noeuds : %d\n", noeud2);
+  printf("Nb 3-noeuds : %d\n", noeud3);
+  printf("Nb 4-noeuds : %d\n", noeud4);
+
+  printf ("\n==== Noeud max ====\n");
+
+  afficher_arbre(noeud_max (a),0);
+
+  printf ("\n==== Afficher clés largeur ====\n");
+
+  Afficher_Cles_Largeur (a);
+
+  printf ("\n==== Afficher clés triées récursivement ====\n");
+
+  Affichage_Cles_Triees_Recursive (a);
+
+  printf ("\n==== Afficher clés triées non-récursivement ====\n") ;
+
+  Affichage_Cles_Triees_NonRecursive (a);
+
+  printf ("\n==== Destruction clé arbre ====\n") ;
+
+  for (int i = 3; i < 10; i+=2) {
+    printf("Destruction clé n°%d", i);
+    Detruire_Cle (&a, i);
+    afficher_arbre(a,0);
+  }
+>>>>>>> cda14194e3c35a97a73bf7e98e97c789fd6380a0
 
   afficher_arbre (a, 0) ;
   // int nbclef = NombreCles(a);
