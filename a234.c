@@ -31,7 +31,18 @@ int NombreCles (Arbre234 a)
      Retourne le nombre de cles presentes dans l'arbre a
   */
 
-  return 0 ;
+  //noeud vide
+  if (a->t ==0){
+    return 0;;
+  }
+
+  int nb_cles = 0;
+  //cas de récurence : appel récursif sur chacun des fils du noeud courant.
+  for (size_t i = 0; i < a->t; i++) {
+    nb_cles = NombreCles(a->fils[i]);
+  }
+  //cas de base : ajout des cles du noeud courant.
+  return nb_cles + a->t -1; //si il y a 4 noeuds il y a 3 clefs.
 }
 
 int GetIndexMax(Arbre234 a){
@@ -70,9 +81,16 @@ int CleMin (Arbre234 a)
 Arbre234 RechercherCle (Arbre234 a, int cle)
 {
   /*
-     rechercher si la cle a est presente dans
+     rechercher si la cle "cle" est presente dans
      l'arbre a. Si oui, retourne le noeud ou se trouve la cle.
   */
+  // Arbre234 curr_node = a;
+  // while(curr_node != NULL && curr_node->t != 0) {
+  //   int nb_elems = curr_node->t - 1;
+  //   for (int i = 0; i < nb_elems; i++) {
+  //     if (curr_node->cles[i]==cle) return curr_node;
+  //   }
+  // }
 
   return NULL ;
 }
@@ -191,13 +209,17 @@ int main (int argc, char **argv)
 
   printf ("\n==== Infos Arbres ====\n") ;
 
-  printf("Nombre de clés : %d\n",NombreCles (a));
+  // printf("Nombre de clés : %d\n",NombreCles (a));
   printf("Clé maximale : %d\n",CleMax (a));
   printf("Clé minimale : %d\n",CleMin (a));
 
   printf ("\n==== Rechercher clé ====\n") ;
 
-  Arbre234 RechercherCle (Arbre234 a, int cle);
+  for (int i = 3; i < 10; i+=2) {
+    printf("Recherche clé n°%d", i);
+    afficher_arbre(RechercherCle (a, i),0);
+  }
+
 
   printf ("\n==== Analyser structure arbre ====\n") ;
 
@@ -232,5 +254,8 @@ int main (int argc, char **argv)
     afficher_arbre(a,0);
   }
 
+  afficher_arbre (a, 0) ;
+  // int nbclef = NombreCles(a);
+  // printf("nombres de clefs dans l'arbre a : %d\n",nbclef);
 
 }
