@@ -133,8 +133,52 @@ int main (int argc, char **argv)
 
   a = lire_arbre (argv [1]) ;
 
-  printf ("==== Afficher arbre ====\n") ;
+  printf ("\n==== Afficher arbre ====\n") ;
   
   afficher_arbre (a, 0) ;
+
+  printf ("\n==== Infos Arbres ====\n") ;
+
+  printf("Nombre de clés : %d\n",NombreCles (a));
+  printf("Clé maximale : %d\n",CleMax (a));
+  printf("Clé minimale : %d\n",CleMin (a));
+
+  printf ("\n==== Rechercher clé ====\n") ;
+
+  Arbre234 RechercherCle (Arbre234 a, int cle);
+
+  printf ("\n==== Analyser structure arbre ====\n") ;
+
+  int feuilles, noeud2, noeud3, noeud4;
+  AnalyseStructureArbre (a, &feuilles, &noeud2, &noeud3, &noeud4);
+  printf("Nb feuilles : %d\n", feuilles);
+  printf("Nb 2-noeuds : %d\n", noeud2);
+  printf("Nb 3-noeuds : %d\n", noeud3);
+  printf("Nb 4-noeuds : %d\n", noeud4);
+
+  printf ("\n==== Noeud max ====\n");
+
+  afficher_arbre(noeud_max (a),0);
+
+  printf ("\n==== Afficher clés largeur ====\n");
+
+  Afficher_Cles_Largeur (a);
+
+  printf ("\n==== Afficher clés triées récursivement ====\n");
+
+  Affichage_Cles_Triees_Recursive (a);
+
+  printf ("\n==== Afficher clés triées non-récursivement ====\n") ;
+
+  Affichage_Cles_Triees_NonRecursive (a);
+
+  printf ("\n==== Destruction clé arbre ====\n") ;
+
+  for (int i = 3; i < 10; i+=2) {
+    printf("Destruction clé n°%d", i);
+    Detruire_Cle (&a, i);
+    afficher_arbre(a,0);
+  }
+
 
 }
