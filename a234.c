@@ -58,8 +58,9 @@ int NombreCles (Arbre234 a)
 
   int nb_cles = 0;
   //cas de récurence : appel récursif sur chacun des fils du noeud courant.
+
   for (size_t i = 0; i < a->t; i++) {
-    nb_cles = NombreCles(a->fils[i]);
+    nb_cles += NombreCles(GetFils(a,i));
   }
   //cas de base : ajout des cles du noeud courant.
   return nb_cles + a->t -1; //si il y a 4 noeuds il y a 3 clefs.
@@ -227,7 +228,7 @@ int main (int argc, char **argv)
 
   printf ("\n==== Infos Arbres ====\n") ;
 
-  // printf("Nombre de clés : %d\n",NombreCles (a));
+  printf("Nombre de clés : %d\n",NombreCles (a));
   printf("Clé maximale : %d\n",CleMax (a));
   printf("Clé minimale : %d\n",CleMin (a));
 
