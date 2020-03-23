@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "a234.h"
+#include "file.h"
+#include "pile.h"
 
 #define max(a,b) ((a)>(b)?(a):(b))
 
@@ -11,19 +13,33 @@ int GetIndexMax(Arbre234 a){
   return (a->t > 0 ? a->t-1 : a->t);
 }
 
-Arbre234 GetFils(Arbre234 a, int index){
-  if(a->t == 2){
-    return a->fils[index+1];
-  } else {
-    return a->fils[index];
+int GetCle(Arbre234 a, int index){
+  switch (a->t) {
+    case 2:
+      if(index >= 1) return -1;
+      return a->cles[1];
+    case 3:
+      if(index >= 2) return -1;
+      return a->cles[index];
+    case 4 :
+      return a->cles[index];
+    default:
+      return -1;
   }
 }
 
-int GetCle(Arbre234 a, int index){
-  if(a->t == 2){
-    return a->cles[index+1];
-  } else {
-    return a->cles[index];
+Arbre234 GetFils(Arbre234 a, int index){
+  switch (a->t) {
+    case 2:
+      if(index >= 2) return NULL;
+      return a->fils[index+1];
+    case 3:
+      if(index >= 3) return NULL;
+      return a->fils[index];
+    case 4 :
+      return a->fils[index];
+    default:
+      return NULL;
   }
 }
 
@@ -158,6 +174,7 @@ void AnalyseStructureArbre (Arbre234 a, int *feuilles, int *noeud2, int *noeud3,
 }
 
 int sumCle (Arbre234 a) {
+  if (a == NULL) return -1;
   int nb_elems = a->t - 1;
   int tot = 0;
   for (int i = 0; i < nb_elems; i++)
@@ -165,15 +182,29 @@ int sumCle (Arbre234 a) {
   return tot;
 }
 
+Arbre234 noeud_max_worker(Arbre234 max, Arbre234 a);
+Arbre234 nmw (Arbre234 max, Arbre234 a) {
+  return noeud_max_worker(max, a);
+}
+Arbre234 noeud_max_worker(Arbre234 max, Arbre234 a) {
+  if (a == NULL) {
+    return max;
+  } else if (EstFeuille(a)) {
+    if (sumCle(a) > sumCle(max)) return a;
+    else return max;
+  } else {
+    Arbre234 comp = max;
+    if (sumCle(a) > sumCle(max)) comp = a;
+    return (nmw(comp, nmw(nmw(a->fils[0], a->fils[1]), nmw(a->fils[2], a->fils[3]))));
+  }
+}
+
 Arbre234 noeud_max (Arbre234 a)
 {
   /*
     Retourne le noeud avec la somme maximale des cles internes
   */
-  int somme_max = 0;
-  Arbre234 noeud_max = a;
-
-  return NULL ;
+  return noeud_max_worker(a, a);
 }
 
 
@@ -184,7 +215,25 @@ void Afficher_Cles_Largeur (Arbre234 a)
     un parcours en largeur
   */
 
-  return ;
+  pfile_t f = creer_file();
+  int err = enfiler(f, a);
+  while (!err && !file_vide(f)) {
+    Arbre234 n = defiler(f);
+    if (n != NULL) {
+      for (int i = 0; i < n->t && !err; i++) {
+        err = enfiler(f, GetFils(n, i));
+      }
+      if (err) break;
+      for (int i = 0; i < n->t-1 ; i++) {
+        printf("%d | ", GetCle(n, i));
+      }
+    }
+  }
+  printf("\n");
+  if (err || detruire_file(f)) {
+    fprintf(stderr,"Erreur avec la file (enfilement ou destruction) !\n");
+    exit(-1);
+  }
 }
 
 
@@ -232,6 +281,7 @@ void Affichage_Cles_Triees_Recursive (Arbre234 a)
 
 }
 
+
 void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
 {
     /*
@@ -239,7 +289,26 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
      Cette fonction ne sera pas recursive
      Utiliser une pile
   */
-
+  ppile_t pile = creer_pile();
+  empiler_noeud(pile, a);
+  while(!pile_vide(pile)){
+    if(type_sommet(pile) == TYPE_ENTIER){
+      int entier_courant = depiler_entier(pile);
+      printf("%d | ", entier_courant);
+    } else {
+      Arbre234 current = depiler_noeud(pile);
+      if (current != NULL && current->t !=0) {
+        int index_max = GetIndexMax(current);
+        for (int i = 0; i < index_max; i++) {
+          empiler_noeud(pile,GetFils(current,index_max-i));
+          empiler_entier(pile,GetCle(current,index_max-1-i));
+        }
+        empiler_noeud(pile, GetFils(current, 0));
+      }
+    }
+  }
+  printf("\n");
+  detruire_pile(pile);
 }
 
 
@@ -303,7 +372,7 @@ int main (int argc, char **argv)
   Afficher_Cles_Largeur (a);
 
   printf ("\n==== Afficher clés triées récursivement ====\n");
-  printf("Récursif: ");
+  
   // Affichage_Cles_Noeud(a);
   Affichage_Cles_Triees_Recursive (a);
 
@@ -318,9 +387,5 @@ int main (int argc, char **argv)
     Detruire_Cle (&a, i);
     afficher_arbre(a,0);
   }
-
-  afficher_arbre (a, 0) ;
-  // int nbclef = NombreCles(a);
-  // printf("nombres de clefs dans l'arbre a : %d\n",nbclef);
 
 }

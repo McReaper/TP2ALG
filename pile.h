@@ -2,9 +2,22 @@
 #define MAX_PILE_SIZE       32
 
 
+union Data {
+  int entier;
+  Arbre234 noeud;
+};
+
+#define TYPE_ENTIER 0
+#define TYPE_ARBRE 1
+
+typedef struct {
+  int type ; // 0 si cest un entier 1 si cest un arbre
+  union Data value;
+} value ;
+
 typedef struct {
   int sommet ;
-  pnoeud_t Tab [MAX_PILE_SIZE] ;
+  value Tab [MAX_PILE_SIZE] ;
 } pile_t, *ppile_t ;
 
 
@@ -41,15 +54,24 @@ Pré-condition: P est non null.
 Post-condition: supprime l'élément au sommet de P.
 Effets de bord: P est modifiée
 */
-pnoeud_t depiler (ppile_t p)  ;
+Arbre234 depiler_noeud (ppile_t p) ;
 
+int depiler_entier (ppile_t p) ;
 /*
 Résultat: 1 si Erreur (pile déjà pleine); 0 sinon
 Données : une pile P.
 Post-condition: ajoute le noeud Pn au sommet de P.
 Effets de bord: P est modifiée
 */
-int empiler (ppile_t p, pnoeud_t pn) ;
+int empiler_noeud (ppile_t p, Arbre234 pn) ;
+
+int empiler_entier (ppile_t p, int pn) ;
+
+/*
+Résultat: 1 si le type est un noeud; 0 si c'est un entier; -1 si la pile est vide
+Données : une pile P.
+*/
+int type_sommet (ppile_t p);
 
 
 /*
