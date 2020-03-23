@@ -168,12 +168,7 @@ int main (int argc, char **argv)
 
   a = lire_arbre (argv [1]) ;
 
-<<<<<<< HEAD
-  printf ("\n==== Afficher arbre ====\n") ;
-
-=======
   printf ("==== Afficher arbre ====\n") ;
->>>>>>> 4da9a8d335ccd0bb4ea1fef53413dcf95a3c4742
   afficher_arbre (a, 0) ;
 
   printf ("\n==== Infos Arbres ====\n") ;
