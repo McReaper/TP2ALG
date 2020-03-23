@@ -2,10 +2,13 @@
 #define MAX_PILE_SIZE       32
 
 
-typedef union data {
+union Data {
   int entier;
   Arbre234 noeud;
-} *Data;
+};
+
+#define TYPE_ENTIER 0
+#define TYPE_ARBRE 1
 
 typedef struct {
   int type ; // 0 si cest un entier 1 si cest un arbre
@@ -14,11 +17,7 @@ typedef struct {
 
 typedef struct {
   int sommet ;
-<<<<<<< HEAD
-  Data Tab [MAX_PILE_SIZE] ;
-=======
   value Tab [MAX_PILE_SIZE] ;
->>>>>>> 472ed23cbdfacf77de75f534d72414608e8d2cea
 } pile_t, *ppile_t ;
 
 

@@ -7,9 +7,6 @@ ppile_t creer_pile ()
 {
   ppile_t p = (ppile_t) malloc(sizeof(pile_t));
   p->sommet = -1;
-  for (int i = 0; i < MAX_PILE_SIZE; i ++){
-    p->Tab[i].type = 0;
-  }
   return p;
 }
 
@@ -72,7 +69,7 @@ int empiler_noeud (ppile_t p, Arbre234 pn)
     return 1;
   p->sommet++;
   p->Tab[p->sommet].value.noeud = pn;
-  p->Tab[p->sommet].type = 1;
+  p->Tab[p->sommet].type = TYPE_ARBRE;
   return 0;
 }
 
@@ -82,7 +79,7 @@ int empiler_entier (ppile_t p, int pn)
     return 1;
   p->sommet++;
   p->Tab[p->sommet].value.entier = pn;
-  p->Tab[p->sommet].type = 0;
+  p->Tab[p->sommet].type = TYPE_ENTIER;
   return 0;
 }
 

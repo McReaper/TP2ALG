@@ -291,11 +291,10 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
   */
   ppile_t pile = creer_pile();
   empiler_noeud(pile, a);
-  printf("[");
   while(!pile_vide(pile)){
-    if(type_sommet(pile)==0){
+    if(type_sommet(pile) == TYPE_ENTIER){
       int entier_courant = depiler_entier(pile);
-      printf(" %d", entier_courant);
+      printf("%d | ", entier_courant);
     } else {
       Arbre234 current = depiler_noeud(pile);
       if (current != NULL && current->t !=0) {
@@ -308,7 +307,7 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
       }
     }
   }
-  printf(" ]");
+  printf("\n");
   detruire_pile(pile);
 }
 
@@ -388,9 +387,5 @@ int main (int argc, char **argv)
     Detruire_Cle (&a, i);
     afficher_arbre(a,0);
   }
-
-  afficher_arbre (a, 0) ;
-  // int nbclef = NombreCles(a);
-  // printf("nombres de clefs dans l'arbre a : %d\n",nbclef);
 
 }
