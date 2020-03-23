@@ -221,7 +221,7 @@ void Afficher_Cles_Largeur (Arbre234 a)
     Arbre234 n = defiler(f);
     if (n != NULL) {
       for (int i = 0; i < n->t && !err; i++) {
-        err = enfiler(f, GetFils(n, i)); 
+        err = enfiler(f, GetFils(n, i));
       }
       if (err) break;
       for (int i = 0; i < n->t-1 ; i++) {
@@ -291,15 +291,25 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
   */
   ppile_t pile = creer_pile();
   empiler_noeud(pile, a);
+  printf("[");
   while(!pile_vide(pile)){
-    // Arbre234 current = depiler_noeud(pile);
-    // while(){
-    //
-    // }
+    if(type_sommet(pile)==0){
+      int entier_courant = depiler_entier(pile);
+      printf(" %d", entier_courant);
+    } else {
+      Arbre234 current = depiler_noeud(pile);
+      if (current != NULL && current->t !=0) {
+        int index_max = GetIndexMax(current);
+        for (int i = 0; i < index_max; i++) {
+          empiler_noeud(pile,GetFils(current,index_max-i));
+          empiler_entier(pile,GetCle(current,index_max-1-i));
+        }
+        empiler_noeud(pile, GetFils(current, 0));
+      }
+    }
   }
-
-
-
+  printf(" ]");
+  detruire_pile(pile);
 }
 
 
