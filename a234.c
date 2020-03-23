@@ -58,7 +58,6 @@ int NombreCles (Arbre234 a)
 
   int nb_cles = 0;
   //cas de récurence : appel récursif sur chacun des fils du noeud courant.
-
   for (size_t i = 0; i < a->t; i++) {
     nb_cles += NombreCles(GetFils(a,i));
   }
@@ -174,12 +173,48 @@ void Afficher_Cles_Largeur (Arbre234 a)
   return ;
 }
 
+
+
+void Affichage_Cles_Noeud (Arbre234 a)
+{
+  /*
+  Afficher les cles d'un noeud en ordre croissant.
+  */
+  if (a != NULL){
+    for (size_t i = 0; i < a->t -1; i++) {
+
+      printf("%d | ", GetCle(a,i));
+    }
+  }
+}
+
 void Affichage_Cles_Triees_Recursive (Arbre234 a)
 {
   /*
      Afficher les cles en ordre croissant
      Cette fonction sera recursive
   */
+
+  if (a != NULL && a->t !=0) {
+
+    Affichage_Cles_Triees_Recursive(GetFils(a,0));
+
+    printf("%d | ", GetCle(a,0));
+
+    Affichage_Cles_Triees_Recursive(GetFils(a,1));
+
+    if (a->t > 2){ //2 clefs ou plus présentes dans le noeuds
+      printf("%d | ", GetCle(a,1));
+
+      Affichage_Cles_Triees_Recursive(GetFils(a,2));
+
+      if (a->t > 3) { // 4 clefs présentes dans le noeud.
+              printf("%d | ", GetCle(a,2));
+
+              Affichage_Cles_Triees_Recursive(GetFils(a,3));
+      }
+    }
+  }
 
 }
 
@@ -254,7 +289,8 @@ int main (int argc, char **argv)
   Afficher_Cles_Largeur (a);
 
   printf ("\n==== Afficher clés triées récursivement ====\n");
-
+  printf("Récursif: ");
+  // Affichage_Cles_Noeud(a);
   Affichage_Cles_Triees_Recursive (a);
 
   printf ("\n==== Afficher clés triées non-récursivement ====\n") ;
