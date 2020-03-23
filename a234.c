@@ -65,9 +65,16 @@ int CleMin (Arbre234 a)
 Arbre234 RechercherCle (Arbre234 a, int cle)
 {
   /*
-     rechercher si la cle a est presente dans
+     rechercher si la cle "cle" est presente dans
      l'arbre a. Si oui, retourne le noeud ou se trouve la cle.
   */
+  // Arbre234 curr_node = a;
+  // while(curr_node != NULL && curr_node->t != 0) {
+  //   int nb_elems = curr_node->t - 1;
+  //   for (int i = 0; i < nb_elems; i++) {
+  //     if (curr_node->cles[i]==cle) return curr_node;
+  //   }
+  // }
 
   return NULL ;
 }
@@ -150,13 +157,8 @@ int main (int argc, char **argv)
 
   a = lire_arbre (argv [1]) ;
 
-<<<<<<< HEAD
-  printf ("==== Afficher arbre ====\n") ;
-
-=======
   printf ("\n==== Afficher arbre ====\n") ;
-  
->>>>>>> 6f14b03a54116564e04ed20c29abcaf1e25ac6c8
+
   afficher_arbre (a, 0) ;
 
   printf ("\n==== Infos Arbres ====\n") ;
@@ -167,7 +169,11 @@ int main (int argc, char **argv)
 
   printf ("\n==== Rechercher clé ====\n") ;
 
-  Arbre234 RechercherCle (Arbre234 a, int cle);
+  for (int i = 3; i < 10; i+=2) {
+    printf("Recherche clé n°%d", i);
+    afficher_arbre(RechercherCle (a, i),0);
+  }
+
 
   printf ("\n==== Analyser structure arbre ====\n") ;
 
