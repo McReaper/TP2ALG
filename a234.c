@@ -124,33 +124,37 @@ int EstFeuille(Arbre234 a){
   return res;
 }
 
+void AnalyseStructureArbreWorker (Arbre234 a, int *feuilles, int *noeud2, int *noeud3, int *noeud4){
+  if(a->t != 0){
+    //On ajoute 1 a sont type
+    if(a->t == 2){
+      *noeud2 = *noeud2 + 1;
+    } else if(a->t == 3){
+      *noeud3 = *noeud3 + 1;
+    } else {
+      *noeud4 = *noeud4 + 1;
+    }
+    if(EstFeuille(a) == 0){
+      int i = 0;
+      //On parcour tout ses enfants pour les analyser
+      while(i <= GetIndexMax(a)){
+        AnalyseStructureArbreWorker(GetFils(a,i), feuilles, noeud2, noeud3, noeud4);
+        i++;
+      }
+    } else {
+      //Cest une feuille on incremente feuilles
+      *feuilles = *feuilles + 1;
+    }
+  }
+}
 
 void AnalyseStructureArbre (Arbre234 a, int *feuilles, int *noeud2, int *noeud3, int *noeud4)
 {
-  // /*
-  //    calculer le nombre de feuilles, de 2-noeuds, 3-noeuds,et 4-noeuds
-  // */
-  // if(a->t != 0){
-  //   //On ajoute 1 a sont type
-  //   if(EstFeuille(a) == 0){
-  //     if(a->t == 2){
-  //       noeud2++;
-  //     } else if(a->t == 3){
-  //       noeud3++;
-  //     } else {
-  //       noeud4++;
-  //     }
-  //     int i = 0;
-  //     //On parcour tout ses enfants pour les analyser
-  //     while(i != GetIndexMax(a)){
-  //       AnalyseStructureArbre(a->fils[i], feuilles, noeud2, noeud3, noeud4);
-  //       i++;
-  //     }
-  //   } else {
-  //     //Cest une feuille on incremente feuilles
-  //     feuilles++;
-  //   }
-  // }
+  *feuilles = 0;
+  *noeud2 = 0;
+  *noeud3 = 0;
+  *noeud4 = 0;
+  AnalyseStructureArbreWorker(a, feuilles, noeud2, noeud3, noeud4);
 }
 
 Arbre234 noeud_max (Arbre234 a)
