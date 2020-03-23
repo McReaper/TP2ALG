@@ -6,6 +6,26 @@
 
 #define max(a,b) ((a)>(b)?(a):(b))
 
+int GetIndexMax(Arbre234 a){
+  //Renvoie l'index du plus grand fils dans un noeud => si 0 alors type noeud = 0
+  return (a->t > 0 ? a->t-1 : a->t);
+}
+
+Arbre234 GetFils(Arbre234 a, int index){
+  if(a->t == 2){
+    return a->fils[index+1];
+  } else {
+    return a->fils[index];
+  }
+}
+
+int GetCle(Arbre234 a, int index){
+  if(a->t == 2){
+    return a->cles[index+1];
+  } else {
+    return a->cles[index];
+  }
+}
 
 int hauteur (Arbre234 a)
 {
@@ -46,28 +66,21 @@ int NombreCles (Arbre234 a)
   return nb_cles + a->t -1; //si il y a 4 noeuds il y a 3 clefs.
 }
 
-int GetIndexMax(Arbre234 a){
-  //Renvoie l'index du plus grand fils dans un noeud => si 0 alors type noeud = 0
-  return (a->t > 0 ? a->t-1 : a->t);
-}
-
 int CleMax (Arbre234 a)
 {
-  return 0;
-  // Arbre234 current = a;
-  // Arbre234 prec = current;
-  // printf("Index max = %d \n", GetIndexMax(current));
-  // while(GetIndexMax(current) != 0){
-  //   prec = current;
-  //   current = current->fils[GetIndexMax(current)];
-  // }
-  // printf("index = %d \n", a->t-2);
-  // return prec->cles[a->t-2];
+  Arbre234 current = a;
+  Arbre234 prec = current;
+  while(GetIndexMax(current) != 0){
+    prec = current;
+    current = GetFils(current,GetIndexMax(current));
+  }
+  return GetCle(prec, prec->t - 2);
 
 }
 
 int CleMin (Arbre234 a)
 {
+<<<<<<< HEAD
   return 0;
   // Arbre234 current = a;
   // Arbre234 prec = current;
@@ -76,6 +89,15 @@ int CleMin (Arbre234 a)
   //   current = current->fils[0];
   // }
   // return prec->cles[0];
+=======
+  Arbre234 current = a;
+  Arbre234 prec = current;
+  while (current->t != 0) {
+    prec = current;
+    current = GetFils(current,0);
+  }
+  return GetCle(prec, 0);
+>>>>>>> dcf0cf9f1b28055b5b53655365d6f39b50dbc85f
 
 }
 
@@ -88,12 +110,14 @@ Arbre234 RechercherCle (Arbre234 a, int cle)
   Arbre234 curr_node = a;
   while(curr_node != NULL && curr_node->t != 0) {
     int nb_elems = curr_node->t - 1;
-    int position = -1;
-    for (int i = 0; i < nb_elems; i++) {
-      if (curr_node->cles[i]==cle) return curr_node;
-    }
+    int pos = 0, trouve = 0;
+    do {
+      trouve = (cle <= GetCle(curr_node, pos));
+      if (!trouve) pos++;
+    } while (pos < nb_elems && !trouve);
+    if (GetCle(curr_node, pos) == cle) return curr_node;
+    else curr_node = GetFils(curr_node, pos);
   }
-
   return NULL ;
 }
 
@@ -102,7 +126,7 @@ int EstFeuille(Arbre234 a){
   if(a->t != 0){
     int i = 0;
     while(i != GetIndexMax(a)){
-      if(a->fils[i]->t != 0){
+      if(GetFils(a,i)->t != 0){
         return 0;
       }
       i++;
@@ -218,7 +242,7 @@ int main (int argc, char **argv)
   printf ("\n==== Rechercher clé ====\n") ;
 
   for (int i = 3; i < 10; i+=2) {
-    printf("Recherche clé n°%d", i);
+    printf("Recherche clé n°%d\n", i);
     afficher_arbre(RechercherCle (a, i),0);
   }
 
