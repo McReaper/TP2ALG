@@ -332,11 +332,174 @@ void detruire_arbre(Arbre234 a){
   //pas encore testé faut que j'apprenne à utiliser valgrind.
 }
 
+//Recupere un index adapter au type d arbre
+int GetIndex(Arbre234 a, int index){
+  if(a->t == 2){
+    return index + 1;
+  } else {
+    return index;
+  }
+}
+
+//Modifie le noeud et renvoie la cle
+Arbre234 RemoveMaxKey(Arbre234 a){
+  //Type 3 ou 4 :
+  if(a->t == 3){
+    //Si c est un type 3 on decale ces cles vers la droite car il devient type 2
+    a->cles[2] = a->cles[1];
+    a->cles[1] = a->cles[0];
+    a->t = a->t-1;
+  } else {
+    a->t = a->t-1;
+  }
+  return a;
+}
+
+//Modifie le noeud et renvoie la cle
+Arbre234 RemoveMinKey(Arbre234 a){
+  //Type 3 ou 4 :
+  if(a->t == 3){
+    a->t = a->t-1;
+  } else {
+    //On decal les cle vers la gauche
+    a->cles[0] = a->cles[1];
+    a->cles[1] = a->cles[2];
+    a->t = a->t-1;
+  }
+  return a;
+}
+
+//Modifie le noeud et le renvoie
+Arbre234 AddMaxKeyToNoeud2(Arbre234 a, int nouvelle_cle){
+  a->t = a->t + 1;
+  a->cles[2] = nouvelle_cle;
+  return a;
+}
+
+//Modifie le noeud et le renvoie
+Arbre234 AddMinKeyToNoeud2(Arbre234 a, int nouvelle_cle){
+  a->t = a->t + 1;
+  a->cles[2] = a->cles[1];
+  a->cles[1] = nouvelle_cle;
+  return a;
+}
+
+
+// Renvoie 1 si l'emprunt a ete effectue 0 sinon
+int EmpruntGauche(Arbre234 parent, int cle){
+  int i = 0;
+  while(i < parent->t-1 && GetCle(parent, i) < cle){
+    i++;
+  }
+
+  //Ici i vaut l'index de la premiere des cles egal ou superieur a cle
+  if(i < parent->t-1){
+    //Il n'y a pas de frere gauche on ne peut rien emprunter
+    if(i == 0){
+      return 0;
+    }
+    //Le nb de cle dans le frere est trop petit pour un emprunt en renvois 0
+    if(GetFils(parent, i-1)->t <= 2){
+      return 0;
+    }
+    //On recupere la cle max du fils gauche
+    int max_key = GetCle(GetFils(parent, i-1), GetFils(parent, i-1)->t-2);
+    //On enleve cette cle du fils gauche
+    parent->fils[GetIndex(parent, i-1)] = RemoveMaxKey(GetFils(parent, i-1));
+    //On met la cle du parent dans le fils droit
+    parent->fils[GetIndex(parent, i)] = AddMinKeyToNoeud2(GetFils(parent, i), parent->cles[GetIndex(parent, i-1)]);
+    //On remplace la cle qu on a enlever au parent par le max du fils gauche
+    parent->cles[GetIndex(parent, i-1)] = max_key;
+    return 1;
+  }
+  return 0; //Operation echouer
+}
+
+// Renvoie 1 si l'emprunt a ete effectue 0 sinon
+int EmpruntDroit(Arbre234 parent, int cle){
+  int i = 0;
+  while(i < parent->t-1 && GetCle(parent, i) < cle){
+    i++;
+  }
+  //Ici i vaut l'index de la premiere des cles egal ou superieur a cle
+  //Si sa nest pas le cas sa veut dire que nous navons pas de fils droit pour faire l emprunt
+  if(i + 1 < parent->t-1){
+    //Le nb de cle dans le frere est trop petit pour un emprunt en renvois 0
+    if(GetFils(parent, i+1)->t <= 2){
+      return 0;
+    }
+    //On recupere la cle min du fils droit
+    int min_key = GetCle(GetFils(parent, i+1), 0);
+    //On enleve cette cle du fils droit
+    parent->fils[GetIndex(parent, i+1)] = RemoveMinKey(GetFils(parent, i+1));
+    //On met la cle du parent dans le fils gauche
+    parent->fils[GetIndex(parent, i)] = AddMaxKeyToNoeud2(GetFils(parent, i), parent->cles[GetIndex(parent, i)]);
+    //On remplace la cle qu on a enlever au parent par le min du fils droit
+    parent->cles[GetIndex(parent, i)] = min_key;
+    return 1; //Operation reussis
+  }
+  return 0; //Operation echouer
+}
+
+Arbre234 SupprimeCle(Arbre234 a, int cle){
+  //Trouver l indice de la cle
+  int i = 0;
+  while(i < a->t-1 && GetCle(a, i) != cle){
+    i++;
+  }
+  //Decaler vers la gauche toute les cle superieur
+  for (int j = i+1; j < a->t-1; j++) {
+    a->cles[GetIndex(a, j-1)] = a->cles[GetIndex(a, j)];
+  }
+  //Si c est un type 3 il vas devenir type 2 on decal donc ces valeur d un cran vers la droite
+  if(a->t == 3){
+    a->cles[2] = a->cles[1];
+    a->cles[1] = a->cles[0];
+    a->t = a->t-1;
+  }
+  a->t = a->t - 1;
+  return a;
+}
+Arbre234 getParent(Arbre234 a){
+  return a;
+}
+
+
+void Detruire_Cle_Feuille (Arbre234 a, int cle){
+  Arbre234 parent = getParent(a);
+  if(EmpruntGauche(parent, cle)){
+    a = SupprimeCle(a, cle);
+  } else if(EmpruntDroit(parent, cle)){
+    a = SupprimeCle(a, cle);
+  } else {
+    //Cas ou on ne peut pas emprunter sur les cotes :
+  }
+}
+
 void Detruire_Cle (Arbre234 *a, int cle)
 {
   /*
     retirer la cle de l'arbre a
   */
+  //On regarde si l'arbre actuel possede la cle:
+  // int i = 0;
+  // while(i < a->t-1 && GetCle(a, i) < cle){
+  //   i++;
+  // }
+  // if(i < a->t-1 && GetCle(a, i) == cle){
+  //   //La cle est presente dans le noeud
+  //   if(EstFeuille(a)){
+  //     Detruire_Cle_Feuille(a, cle);
+  //   } else {
+  //     Detruire_Cle_Noeud_Interne(a, cle);
+  //   }
+  // } else {
+  //   if(!EstFeuille(a)){
+  //     //Si sa n est pas une feuille on continue a descendre pour le supprime
+  //     Detruire_Cle(GetFils(a, i), cle);
+  //   }
+  // }
+
 
   return ;
 }
