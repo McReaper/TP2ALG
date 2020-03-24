@@ -43,6 +43,59 @@ Arbre234 GetFils(Arbre234 a, int index){
   }
 }
 
+void detruire_arbre(Arbre234 a){
+
+  /*
+  Libération en mémoire de l'arbre
+  */
+
+
+  if (a != NULL) {
+
+
+    // Arbre234 fils1 = GetFils(a,0);
+    // Arbre234 fils2 = GetFils(a,1);
+    // Arbre234 fils3 = GetFils(a,2);
+    // Arbre234 fils4 = GetFils(a,3);
+
+    // detruire_arbre(fils1);
+    // detruire_arbre(fils2);
+    // detruire_arbre(fils3);
+    // detruire_arbre(fils4);
+
+    detruire_arbre(GetFils(a,0));
+    detruire_arbre(GetFils(a,1));
+    detruire_arbre(GetFils(a,2));
+    detruire_arbre(GetFils(a,3));
+
+    //
+    // if (GetFils(a,0)->t == 0){
+    //   // free(fils1);
+    //   printf("oui j'ai un fils de type 0 - case 4\n");
+    // }
+    // if (GetFils(a,1)->t == 0){
+    //   // free(fils1);
+    //   printf("oui j'ai un fils de type 0 - case 2\n");
+    // }
+    // if (GetFils(a,2)->t == 0){
+    //   // free(fils1);
+    //   printf("oui j'ai un fils de type 0 - case 3\n");
+    // }
+    // if (GetFils(a,3)->t == 0){
+    //   // free(fils1);
+    //   printf("oui j'ai un fils de type 0 - case 4\n");
+    // }
+
+    //on libère les noeuds de type 0 également !
+
+    // if (GetCle(a->t == 2){
+    //   free(a->)
+    // }
+    
+    free(a);
+  }
+}
+
 int hauteur (Arbre234 a)
 {
   int h0, h1, h2, h3 ;
@@ -265,7 +318,7 @@ void Affichage_Cles_Triees_Recursive (Arbre234 a)
 
     Affichage_Cles_Triees_Recursive(GetFils(a,1));
 
-    if (a->t > 2){ //2 clefs ou plus présentes dans le noeuds
+    if (a->t > 2){ //3 clefs ou plus présentes dans le noeuds
       printf("%d | ", GetCle(a,1));
 
       Affichage_Cles_Triees_Recursive(GetFils(a,2));
@@ -310,23 +363,6 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
   detruire_pile(pile);
 }
 
-
-void detruire_arbre(Arbre234 a){
-
-  /*
-  Libération en mémoire de l'arbre
-  */
-
-  if(a != NULL) {
-    detruire_arbre(GetFils(a,0));
-    detruire_arbre(GetFils(a,1));
-    detruire_arbre(GetFils(a,2));
-    detruire_arbre(GetFils(a,3));
-    free(a);
-  }
-
-  //pas encore testé faut que j'apprenne à utiliser valgrind.
-}
 
 //Recupere un index adapter au type d arbre
 int GetIndex(Arbre234 a, int index){
@@ -566,7 +602,5 @@ int main (int argc, char **argv)
     Detruire_Cle (&a, i);
     afficher_arbre(a,0);
   }
-
   detruire_arbre(a);
-
 }
