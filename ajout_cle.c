@@ -92,15 +92,15 @@ void eclater_4noeud_interne (Arbre234 *a, Arbre234 pere, int cle, int niveau)
 	  pere->fils [0] = pere->fils [1] ;
 	  pere->fils [1] = c ;
 	  pere->fils [2] = eclat ;
-	  pere->fils [3] = allouer_noeud () ;
+	  pere->fils [3] = NULL ; //MODIF ICI
 	  	 
 	  eclat->t = 2 ;
 	  eclat->cles [1] = c->cles [2] ;
 
 	  eclat->fils [1] = c->fils[2] ;
 	  eclat->fils [2] = c->fils[3] ;
-	  eclat->fils [0] = allouer_noeud () ;
-	  eclat->fils [3] = allouer_noeud () ;
+	  eclat->fils [0] = NULL ; //MODIF ICI
+	  eclat->fils [3] = NULL ; //MODIF ICI
 	  
 	  c->t = 2 ;
 	  c->cles [1] = c->cles [0] ;
@@ -109,7 +109,6 @@ void eclater_4noeud_interne (Arbre234 *a, Arbre234 pere, int cle, int niveau)
 
 	  c->fils [2] = c->fils [1] ;
 	  c->fils [1] = c->fils [0] ;
-
 	}
              
       if (cle > pere->cles [1])
@@ -247,8 +246,8 @@ void ajouter_cle (Arbre234 *a, int cle, int niveau, Arbre234 pere)
       p->t = 2 ;
       p->cles [1] = cle ;
 
-      p->fils [0] = allouer_noeud () ;
-      p->fils [3] = allouer_noeud () ;
+      p->fils [0] = NULL ; //MODIF ICI
+      p->fils [3] = NULL ; //MODIF ICI
       
       p->fils [1] = allouer_noeud () ;
       p->fils [2] = allouer_noeud () ;
