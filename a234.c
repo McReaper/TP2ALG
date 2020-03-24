@@ -408,4 +408,6 @@ int main (int argc, char **argv)
     afficher_arbre(a,0);
   }
 
+  detruire_arbre(a);
+
 }
