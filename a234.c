@@ -8,7 +8,7 @@
 
 #define max(a,b) ((a)>(b)?(a):(b))
 
-int GetIndexMax(Arbre234 a){
+int GetNbElems(Arbre234 a){
   //Renvoie l'index du plus grand fils dans un noeud => si 0 alors type noeud = 0
   return (a->t > 0 ? a->t-1 : a->t);
 }
@@ -85,9 +85,9 @@ int CleMax (Arbre234 a)
 {
   Arbre234 current = a;
   Arbre234 prec = current;
-  while(GetIndexMax(current) != 0){
+  while(GetNbElems(current) != 0){
     prec = current;
-    current = GetFils(current,GetIndexMax(current));
+    current = GetFils(current,GetNbElems(current));
   }
   return GetCle(prec, prec->t - 2);
 
@@ -129,7 +129,7 @@ int EstFeuille(Arbre234 a){
   int res = 0;
   if(a->t != 0){
     int i = 0;
-    while(i != GetIndexMax(a)){
+    while(i != GetNbElems(a)){
       if(GetFils(a,i)->t != 0){
         return 0;
       }
@@ -153,7 +153,7 @@ void AnalyseStructureArbreWorker (Arbre234 a, int *feuilles, int *noeud2, int *n
     if(EstFeuille(a) == 0){
       int i = 0;
       //On parcour tout ses enfants pour les analyser
-      while(i <= GetIndexMax(a)){
+      while(i <= GetNbElems(a)){
         AnalyseStructureArbreWorker(GetFils(a,i), feuilles, noeud2, noeud3, noeud4);
         i++;
       }
@@ -185,11 +185,7 @@ int sumCle (Arbre234 a) {
   return tot;
 }
 
-Arbre234 noeud_max_worker(Arbre234 max, Arbre234 a);
-Arbre234 nmw (Arbre234 max, Arbre234 a) {
-  return noeud_max_worker(max, a);
-}
-Arbre234 noeud_max_worker(Arbre234 max, Arbre234 a) {
+Arbre234 nmw /*Noeud Max Worker*/ (Arbre234 max, Arbre234 a) {
   if (a == NULL) {
     return max;
   } else if (EstFeuille(a)) {
@@ -207,7 +203,7 @@ Arbre234 noeud_max (Arbre234 a)
   /*
     Retourne le noeud avec la somme maximale des cles internes
   */
-  return noeud_max_worker(a, a);
+  return nmw(a, a);
 }
 
 
@@ -301,10 +297,10 @@ void Affichage_Cles_Triees_NonRecursive (Arbre234 a)
     } else {
       Arbre234 current = depiler_noeud(pile);
       if (current != NULL && current->t !=0) {
-        int index_max = GetIndexMax(current);
-        for (int i = 0; i < index_max; i++) {
-          empiler_noeud(pile,GetFils(current,index_max-i));
-          empiler_entier(pile,GetCle(current,index_max-1-i));
+        int nb_elems = GetNbElems(current);
+        for (int i = 0; i < nb_elems; i++) {
+          empiler_noeud(pile,GetFils(current,nb_elems-i));
+          empiler_entier(pile,GetCle(current,nb_elems-1-i));
         }
         empiler_noeud(pile, GetFils(current, 0));
       }
