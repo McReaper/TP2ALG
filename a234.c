@@ -49,49 +49,13 @@ void detruire_arbre(Arbre234 a){
   Libération en mémoire de l'arbre
   */
 
-
   if (a != NULL) {
-
-
-    // Arbre234 fils1 = GetFils(a,0);
-    // Arbre234 fils2 = GetFils(a,1);
-    // Arbre234 fils3 = GetFils(a,2);
-    // Arbre234 fils4 = GetFils(a,3);
-
-    // detruire_arbre(fils1);
-    // detruire_arbre(fils2);
-    // detruire_arbre(fils3);
-    // detruire_arbre(fils4);
 
     detruire_arbre(GetFils(a,0));
     detruire_arbre(GetFils(a,1));
     detruire_arbre(GetFils(a,2));
     detruire_arbre(GetFils(a,3));
 
-    //
-    // if (GetFils(a,0)->t == 0){
-    //   // free(fils1);
-    //   printf("oui j'ai un fils de type 0 - case 4\n");
-    // }
-    // if (GetFils(a,1)->t == 0){
-    //   // free(fils1);
-    //   printf("oui j'ai un fils de type 0 - case 2\n");
-    // }
-    // if (GetFils(a,2)->t == 0){
-    //   // free(fils1);
-    //   printf("oui j'ai un fils de type 0 - case 3\n");
-    // }
-    // if (GetFils(a,3)->t == 0){
-    //   // free(fils1);
-    //   printf("oui j'ai un fils de type 0 - case 4\n");
-    // }
-
-    //on libère les noeuds de type 0 également !
-
-    // if (GetCle(a->t == 2){
-    //   free(a->)
-    // }
-    
     free(a);
   }
 }
