@@ -371,6 +371,11 @@ Arbre234 AddMaxKeyToNoeud2(Arbre234 a, int nouvelle_cle){
   a->cles[2] = nouvelle_cle;
   a->cles[0] = a->cles[1];
   a->cles[1] = a->cles[2];
+
+  Arbre234 buffer = a->fils[0];
+  a->fils[0] = a->fils[1];
+  a->fils[1] = a->fils[2];
+  a->fils[2] = buffer;
   return a;
 }
 
@@ -379,6 +384,11 @@ Arbre234 AddMinKeyToNoeud2(Arbre234 a, int nouvelle_cle){
   a->t = a->t + 1;
   // a->cles[1] = a->cles[1];
   a->cles[0] = nouvelle_cle;
+
+  Arbre234 buffer = a->fils[0];
+  a->fils[0] = a->fils[1];
+  a->fils[1] = a->fils[2];
+  a->fils[2] = buffer;
   return a;
 }
 
@@ -524,7 +534,7 @@ int MergeDroite(Arbre234 *a, int cle){
   return 0;
 }
 
-//Fonction qui insere le noeud source dans le noeud destination
+//Fonction qui insere le noeud source dans le noeud destination avec la cle entre les 2
 Arbre234 merge2noeud(Arbre234 dst, Arbre234 src, int cle){
   int taille = dst->t + src->t;
   //On verifie que la fusion fera bien un noeud de taille reglementaire
@@ -558,7 +568,7 @@ void Detruire_Cle_Feuille (Arbre234 a, int cle){
     Arbre234 parent = GetParent(a);
     //Nous supprimons la seul cle dans la racine donc
     if(parent == NULL){
-      detruire_arbre(a);
+      // detruire_arbre(a);
       return ;
     }
 
@@ -609,30 +619,130 @@ int RemplaceDroite(Arbre234 a, int indice){
   return 0;
 }
 
+// Renvoie 1 si l'emprunt a ete effectue 0 sinon
+int EmpruntGaucheInterne(Arbre234 *parent, int cle){
+  int i = 0;
+  while(i < (*parent)->t-1 && GetCle((*parent), i) < cle){
+    i++;
+  }
+
+  //Ici i vaut l'index de la premiere des cles egal ou superieur a cle
+  if(i <= (*parent)->t-1){
+    //Il n'y a pas de frere gauche on ne peut rien emprunter
+    if(i == 0){
+      return 0;
+    }
+    //Le nb de cle dans le frere est trop petit pour un emprunt en renvois 0
+    if(GetFils((*parent), i-1)->t <= 2){
+      return 0;
+    }
+    //On recupere la cle max du fils gauche
+    int max_key = GetCle(GetFils((*parent), i-1), GetFils((*parent), i-1)->t-2);
+    //On enleve cette cle du fils gauche
+    Arbre234 context_parent = GetParent();
+    SetParent((*parent));
+    Detruire_Cle((*parent)->fils[GetIndex((*parent), i-1)], GetCle(GetFils((*parent), i-1),GetFils((*parent), i-1)->t-2));
+    SetParent(context_parent);
+    //On met la cle du parent dans le fils droit
+    (*parent)->fils[GetIndex((*parent), i)] = AddMinKeyToNoeud2(GetFils((*parent), i), (*parent)->cles[GetIndex((*parent), i-1)]);
+    //On remplace la cle qu on a enlever au parent par le max du fils gauche
+    (*parent)->cles[GetIndex((*parent), i-1)] = max_key;
+    return 1;
+  }
+  return 0; //Operation echouer
+}
+
+// Renvoie 1 si l'emprunt a ete effectue 0 sinon
+int EmpruntDroitInterne(Arbre234 *parent, int cle){
+  int i = 0;
+  while(i < (*parent)->t-1 && GetCle((*parent), i) < cle){
+    i++;
+  }
+  //Ici i vaut l'index de la premiere des cles egal ou superieur a cle
+  //Si sa nest pas le cas sa veut dire que nous navons pas de fils droit pour faire l emprunt
+  if(i + 1 <= (*parent)->t-1){
+    //Le nb de cle dans le frere est trop petit pour un emprunt en renvois 0
+    if(GetFils((*parent), i+1)->t <= 2){
+      return 0;
+    }
+    //On recupere la cle min du fils droit
+    int min_key = GetCle(GetFils((*parent), i+1), GetIndex(GetFils((*parent), i+1), 0));
+    //On enleve cette cle du fils droit
+    Arbre234 context_parent = GetParent();
+    SetParent((*parent));
+    Detruire_Cle((*parent)->fils[GetIndex((*parent), i+1)], GetCle(GetFils((*parent), i+1),0));
+    SetParent(context_parent);
+    //On met la cle du parent dans le fils gauche
+    (*parent)->fils[GetIndex((*parent), i)] = AddMaxKeyToNoeud2(GetFils((*parent), i), (*parent)->cles[GetIndex((*parent), i)]);
+    //On remplace la cle qu on a enlever au parent par le min du fils droit
+    (*parent)->cles[GetIndex((*parent), i)] = min_key;
+    return 1; //Operation reussis
+  }
+  return 0; //Operation echouer
+}
+
 void Detruire_Cle_Noeud_Interne (Arbre234 a, int cle){
   //Trouver l indice de la cle a supprimer
   int i = 0;
   while(i < a->t-1 && GetCle(a, i) != cle){
     i++;
   }
+  {
+
   // 3 cas possible
   if (RemplaceGauche(a, i)){
     // a = SupprimeCle(a, cle);
   } else if(RemplaceDroite(a, i)) {
     // a = SupprimeCle(a, cle);
   } else {
-    //Sinon on fusionne les fils entourant la cle
-    afficher_arbre(a, 0);
-    a->fils[GetIndex(a, i+1)] = merge2noeud(GetFils(a, i), GetFils(a, i+1), cle);
-    //On decale les fils qu il reste :
-    for (int j = i+1; j <= a->t-1; j++) {
-      a->fils[GetIndex(a, j-1)] = a->fils[GetIndex(a, j)];
+    if (a->t > 2){
+      //Sinon on fusionne les fils entourant la cle
+      afficher_arbre(a, 0);
+      a->fils[GetIndex(a, i+1)] = merge2noeud(GetFils(a, i), GetFils(a, i+1), cle);
+      //On decale les fils qu il reste :
+      for (int j = i+1; j <= a->t-1; j++) {
+        a->fils[GetIndex(a, j-1)] = a->fils[GetIndex(a, j)];
+      }
+      //Et on la supprime
+      a = SupprimeCle(a, cle);
+      //Et on supprime recursivement
+      Detruire_Cle(a, cle);
+    } else {
+      if(a->t <= 2){
+        if(EmpruntGaucheInterne(&parent, cle)){
+          a = SupprimeCle(a, cle);
+        } else if(EmpruntDroitInterne(&parent, cle)){
+          a = SupprimeCle(a, cle);
+        }
+      }
     }
-    //Et on la supprime
-    a = SupprimeCle(a, cle);
-    //Et on supprime recursivement
-    Detruire_Cle(a, cle);
+    }
   }
+}
+
+Arbre234 Fusion(Arbre234 *a){
+  if((*a)->t == 2){
+    Arbre234 f_gauche = (*a)->fils[1];
+    Arbre234 f_droit = (*a)->fils[2];
+    if(f_gauche->t == 2 && f_droit->t == 2 && !EstFeuille(f_gauche) && !EstFeuille(f_droit)){
+      int sauvCle = (*a)->cles[1];
+
+      (*a)->fils[0] = f_gauche->fils[1];
+      (*a)->fils[1] = f_gauche->fils[2];
+      (*a)->fils[2] = f_droit->fils[1];
+      (*a)->fils[3] = f_droit->fils[2];
+
+      (*a)->cles[0] = f_gauche->cles[1];
+      (*a)->cles[1] = sauvCle;
+      (*a)->cles[2] = f_droit->cles[1];
+
+      (*a)->t = 4;
+
+      free(f_gauche);
+      free(f_droit);
+    }
+  }
+  return (*a);
 }
 
 void Detruire_Cle (Arbre234 a, int cle)
@@ -640,6 +750,8 @@ void Detruire_Cle (Arbre234 a, int cle)
   /*
     retirer la cle de l'arbre a
   */
+  //On est dans la racine
+  a = Fusion(&a);
   //On regarde si l'arbre actuel possede la cle:
   int i = 0;
   while(i < a->t-1 && GetCle(a, i) < cle){
@@ -725,10 +837,44 @@ int main (int argc, char **argv)
 
   printf ("\n==== Destruction clé arbre ====\n") ;
 
-  for (int i = 3; i < 10; i+=2) {
-    printf("Destruction clé n°%d", i);
-    Detruire_Cle (a, i);
-    afficher_arbre(a,0);
-  }
+  // for (int i = 3; i < 10; i+=2) {
+  //   printf("Destruction clé n°%d", i);
+  //   Detruire_Cle (a, i);
+  //   afficher_arbre(a,0);
+  // }
+
+  printf("Destruction clé n°%d\n", 300);
+  Detruire_Cle (a, 300);
+  afficher_arbre(a,0);
+
+  printf("Destruction clé n°%d\n", 82);
+  Detruire_Cle (a, 82);
+  afficher_arbre(a,0);
+
+  printf("Destruction clé n°%d\n", 85);
+  Detruire_Cle (a, 85);
+  afficher_arbre(a,0);
+
+  printf("Destruction clé n°%d\n", 80);
+  Detruire_Cle (a, 80);
+  afficher_arbre(a,0);
+
+  printf("Destruction clé n°%d\n", 30);
+  Detruire_Cle (a, 30);
+  afficher_arbre(a,0);
+
+  printf("Destruction clé n°%d\n", 285);
+  Detruire_Cle (a, 285);
+  afficher_arbre(a,0);
+
+  printf("Destruction clé n°%d\n", 20);
+  Detruire_Cle (a, 20);
+  afficher_arbre(a,0);
+
+  printf("Destruction clé n°%d\n", 350);
+  Detruire_Cle (a, 350);
+  afficher_arbre(a,0);
+
+
   detruire_arbre(a);
 }
