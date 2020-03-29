@@ -51,10 +51,10 @@ void detruire_arbre(Arbre234 a){
 
   if (a != NULL) {
 
-    detruire_arbre(GetFils(a,0));
-    detruire_arbre(GetFils(a,1));
-    detruire_arbre(GetFils(a,2));
-    detruire_arbre(GetFils(a,3));
+    detruire_arbre(a->fils[0]);
+    detruire_arbre(a->fils[1]);
+    detruire_arbre(a->fils[2]);
+    detruire_arbre(a->fils[3]);
 
     free(a);
   }
@@ -345,6 +345,12 @@ Arbre234 RemoveMaxKey(Arbre234 a){
     a->cles[2] = a->cles[1];
     a->cles[1] = a->cles[0];
     a->t = a->t-1;
+
+    Arbre234 buffer = a->fils[1];
+    a->fils[1] = a->fils[0];
+    a->fils[0] = a->fils[3];
+    a->fils[3] = a->fils[2];
+    a->fils[2] = buffer;
   } else {
     a->t = a->t-1;
   }
@@ -356,6 +362,11 @@ Arbre234 RemoveMinKey(Arbre234 a){
   //Type 3 ou 4 :
   if(a->t == 3){
     a->t = a->t-1;
+    Arbre234 buffer = a->fils[1];
+    a->fils[1] = a->fils[0];
+    a->fils[0] = a->fils[3];
+    a->fils[3] = a->fils[2];
+    a->fils[2] = buffer;
   } else {
     //On decal les cle vers la gauche
     a->cles[0] = a->cles[1];
@@ -372,22 +383,17 @@ Arbre234 AddMaxKeyToNoeud2(Arbre234 a, int nouvelle_cle){
     a->cles[2] = nouvelle_cle;
     a->cles[0] = a->cles[1];
     a->cles[1] = a->cles[2];
-
-    Arbre234 buffer = a->fils[0];
-    a->fils[0] = a->fils[1];
-    a->fils[1] = a->fils[2];
-    a->fils[2] = buffer;
   } else {
     a->t = a->t + 1;
     a->cles[0] = a->cles[1];
     a->cles[1] = GetCle(a->fils[2] , 0);
     a->fils[2]->cles[1] = nouvelle_cle;
-
-    Arbre234 buffer = a->fils[0];
-    a->fils[0] = a->fils[1];
-    a->fils[1] = a->fils[2];
-    a->fils[2] = buffer;
   }
+  Arbre234 buffer = a->fils[0];
+  a->fils[0] = a->fils[1];
+  a->fils[1] = a->fils[2];
+  a->fils[2] = a->fils[3];
+  a->fils[3] = buffer;
 
   return a;
 }
@@ -400,20 +406,17 @@ Arbre234 AddMinKeyToNoeud2(Arbre234 a, int nouvelle_cle){
     a->cles[0] = a->cles[1];
     a->cles[1] = a->cles[2];
 
-    Arbre234 buffer = a->fils[0];
-    a->fils[0] = a->fils[1];
-    a->fils[1] = a->fils[2];
-    a->fils[2] = buffer;
   } else {
     a->t = a->t + 1;
     a->cles[0] = GetCle(a->fils[1] , 0);
     a->fils[1]->cles[1] = nouvelle_cle;
 
-    Arbre234 buffer = a->fils[0];
-    a->fils[0] = a->fils[1];
-    a->fils[1] = a->fils[2];
-    a->fils[2] = buffer;
   }
+  Arbre234 buffer = a->fils[0];
+  a->fils[0] = a->fils[1];
+  a->fils[1] = a->fils[2];
+  a->fils[2] = a->fils[3];
+  a->fils[3] = buffer;
   return a;
 }
 
@@ -489,14 +492,18 @@ Arbre234 SupprimeCle(Arbre234 a, int cle){
     a->cles[2] = a->cles[1];
     a->cles[1] = a->cles[0];
 
+    Arbre234 buffer = a->fils[3];
+    a->fils[3] = a->fils[2];
     a->fils[2] = a->fils[1];
     a->fils[1] = a->fils[0];
+    a->fils[0] = buffer;
   }
   a->t = a->t - 1;
   return a;
 }
 
-
+//--------------------------------------------------------------------------------
+// Valeur global nescessaire pour la destruction de cle
 Arbre234 parent = NULL;
 void SetParent(Arbre234 a){
   parent = a;
@@ -506,26 +513,83 @@ Arbre234 GetParent(){
   return parent;
 }
 
+int global_niveau = 0;
+void SetNiveau(int nouvelle_valeur){
+  global_niveau = nouvelle_valeur;
+}
+
+int GetNiveau(){
+  return global_niveau;
+}
+
+void IncrNiveau(){
+  global_niveau = global_niveau + 1;
+}
+
+//--------------------------------------------------------------------------------
+Arbre234 merge2noeud(Arbre234 dst, Arbre234 src, int cle);
 
 int MergeGauche(Arbre234 *a, int cle){
   int i = 0;
   Arbre234 parent = GetParent();
-  while(i < parent->t-1 && GetCle(parent, i) < cle){
+  while(i < GetParent()->t-1 && GetCle(GetParent(), i) < cle){
     i++;
   }
   if(i > 0 && i <= parent->t-1){
-    //On recupere la cle du parent
-    int cle_parent = GetCle(parent, i);
-    //On recupere le fils gauche
-    Arbre234 enfant_gauche = GetFils(parent, i-1);
-    //On insere dans le fils gauche la cle correspondante
-    //On est sur ici que enfant_gauche et le noeud contenant la cle a supprimer sont de type 2
-    enfant_gauche = AddMaxKeyToNoeud2(enfant_gauche, cle_parent);
-    enfant_gauche->cles[enfant_gauche->t-1] = GetCle((*a), 0);
-    enfant_gauche->t = enfant_gauche->t + 1;
-    SupprimeCle(parent, cle_parent);
-    free((*a));
-    (*a) = enfant_gauche;
+    parent->fils[GetIndex(parent, i-1)] = merge2noeud(parent->fils[GetIndex(parent, i-1)], parent->fils[GetIndex(parent, i)],GetCle(parent, i));
+    if(parent->t == 3){
+      //Cest des noeud3
+      if(i == 1){
+        Arbre234 buff = parent->fils[1];
+        parent->fils[1] = parent->fils[0];
+        parent->fils[0] = buff;
+        parent->fils[0]->t = 0;
+        (*a) = parent->fils[1];
+      } else {
+        // i == 2
+        Arbre234 buff = parent->fils[2];
+        parent->fils[2] = parent->fils[1];
+        parent->fils[1] = parent->fils[0];
+
+        parent->fils[0] = buff;
+        parent->fils[0]->t = 0;
+
+        parent->cles[1] = parent->cles[0];
+
+        (*a) = parent->fils[2];
+      }
+    } else {
+      //Cest des noeud4
+      if(i == 1){
+        Arbre234 buffer = parent->fils[1];
+        parent->fils[1] = parent->fils[2];
+        parent->fils[2] = parent->fils[3];
+
+        parent->fils[3] = buffer;
+        parent->fils[3]->t = 0;
+
+        parent->cles[0] = parent->cles[1];
+        parent->cles[1] = parent->cles[2];
+
+        (*a) = parent->fils[0];
+      } else if(i == 2){
+        Arbre234 buffer = parent->fils[2];
+        parent->fils[2] = parent->fils[3];
+
+        parent->fils[3] = buffer;
+        parent->fils[3]->t = 0;
+
+        parent->cles[1] = parent->cles[2];
+
+        (*a) = parent->fils[1];
+      } else {
+        //i == 3
+        parent->fils[3]->t = 0;
+
+        (*a) = parent->fils[2];
+      }
+    }
+    parent->t = parent->t - 1 ;
     return 1;
   }
   return 0;
@@ -533,27 +597,64 @@ int MergeGauche(Arbre234 *a, int cle){
 
 int MergeDroite(Arbre234 *a, int cle){
   int i = 0;
-  while(i < (*a)->t-1 && GetCle((*a), i) < cle){
+  while(i < GetParent()->t-1 && GetCle(GetParent(), i) < cle){
     i++;
   }
   if(i + 1 <= parent->t-1){
-    //On recupere la cle du parent
-    int cle_parent = GetCle(parent, i);
-    //On recupere le fils gauche
-    Arbre234 enfant_droit = GetFils(parent, i+1);
-    //On insere dans le fils gauche la cle correspondante
-    //On est sur ici que enfant_gauche et le noeud contenant la cle a supprimer sont de type 2
-    //On ajoute la cle entre les 2 fils dans le fils droit
-    enfant_droit = AddMinKeyToNoeud2(enfant_droit, cle_parent);
-    //On ajoute la cle a supprime :
-    enfant_droit->cles[2] = enfant_droit->cles[1];
-    enfant_droit->cles[1] = enfant_droit->cles[0];
-    enfant_droit->cles[0] = GetCle((*a), 0);
+    parent->fils[GetIndex(parent, i)] = merge2noeud(parent->fils[GetIndex(parent, i)], parent->fils[GetIndex(parent, i + 1)],GetCle(parent, i));
+    if(parent->t == 3){
+      //Cest des noeud3
+      if(i + 1 == 1){
+        Arbre234 buff = parent->fils[1];
+        parent->fils[1] = parent->fils[0];
+        parent->fils[0] = buff;
+        parent->fils[0]->t = 0;
+        (*a) = parent->fils[1];
+      } else {
+        // i + 1 == 2
+        Arbre234 buff = parent->fils[2];
+        parent->fils[2] = parent->fils[1];
+        parent->fils[1] = parent->fils[0];
 
-    enfant_droit->t = enfant_droit->t + 1;
-    SupprimeCle(parent, cle_parent);
-    free((*a));
-    (*a) = enfant_droit;
+        parent->fils[0] = buff;
+        parent->fils[0]->t = 0;
+
+        parent->cles[1] = parent->cles[0];
+
+        (*a) = parent->fils[2];
+      }
+    } else {
+      //Cest des noeud4
+      if(i + 1 == 1){
+        Arbre234 buffer = parent->fils[1];
+        parent->fils[1] = parent->fils[2];
+        parent->fils[2] = parent->fils[3];
+
+        parent->fils[3] = buffer;
+        parent->fils[3]->t = 0;
+
+        parent->cles[0] = parent->cles[1];
+        parent->cles[1] = parent->cles[2];
+
+        (*a) = parent->fils[0];
+      } else if(i + 1 == 2){
+        Arbre234 buffer = parent->fils[2];
+        parent->fils[2] = parent->fils[3];
+
+        parent->fils[3] = buffer;
+        parent->fils[3]->t = 0;
+
+        parent->cles[1] = parent->cles[2];
+
+        (*a) = parent->fils[1];
+      } else {
+        //i == 3
+        parent->fils[3]->t = 0;
+
+        (*a) = parent->fils[2];
+      }
+    }
+    parent->t = parent->t - 1 ;
     return 1;
   }
   return 0;
@@ -567,8 +668,16 @@ Arbre234 merge2noeud(Arbre234 dst, Arbre234 src, int cle){
   if(taille <= 4 && dst->t != 0 && src->t != 0){
     Arbre234 plusPetit = (GetCle(dst, 0) < GetCle(src, 0) ? dst : src);
     Arbre234 plusGrand = (GetCle(dst, 0) > GetCle(src, 0) ? dst : src);
+
+    free(plusPetit->fils[0]);
+    free(plusPetit->fils[3]);
+
+    free(plusGrand->fils[0]);
+    free(plusGrand->fils[3]);
+
     plusPetit->fils[0] = plusPetit->fils[1];
     plusPetit->fils[1] = plusPetit->fils[2];
+
     plusPetit->fils[2] = plusGrand->fils[1];
     plusPetit->fils[3] = plusGrand->fils[2];
 
@@ -597,17 +706,23 @@ void Detruire_Cle_Feuille (Arbre234 a, int cle){
       return ;
     }
 
+    printf("Ylo\n");
     if(EmpruntGauche(&parent, cle)){
+      printf("Ylo11\n");
       a = SupprimeCle(a, cle);
     } else if(EmpruntDroit(&parent, cle)){
+      printf("Ylo12\n");
       a = SupprimeCle(a, cle);
     } else {
       //Cas ou on ne peut pas emprunter sur les cotes :
       //Cas de merge : si parent t > 2
       if(GetParent()->t > 2){
         if(MergeGauche(&a, cle)){
+          printf("Ylo21\n");
           a = SupprimeCle(a, cle);
         } else if(MergeDroite(&a, cle)){
+          printf("Ylo22\n");
+          afficher_arbre(a, cle);
           a = SupprimeCle(a, cle);
         }
       }
@@ -621,11 +736,18 @@ void Detruire_Cle (Arbre234 a, int cle);
 int RemplaceGauche(Arbre234 a, int indice){
   Arbre234 fils_gauche = GetFils(a, indice);
   if(fils_gauche->t > 2){
+    printf("JJJJJ\n");
     //Prendre la plus grande cle a gauche et la mettre a la place de la cle a supprimer
     a->cles[GetIndex(a, indice)] = GetCle(fils_gauche, fils_gauche->t-2);
     //Puis supprimer de façons recursive
+    Arbre234 context_parent = GetParent();
+    int context_niveau = GetNiveau();
     SetParent(a);
+    IncrNiveau();
     Detruire_Cle(fils_gauche,  GetCle(fils_gauche, fils_gauche->t-2));
+    SetNiveau(context_niveau);
+    SetParent(context_parent);
+
     return 1;
   }
   return 0;
@@ -634,11 +756,17 @@ int RemplaceGauche(Arbre234 a, int indice){
 int RemplaceDroite(Arbre234 a, int indice){
   Arbre234 fils_droit = GetFils(a, indice+1);
   if(fils_droit->t > 2){
+    printf("JJJJJ2\n");
     //Prendre la plus petite cle a droite et la mettre a la place de la cle a supprimer
     a->cles[GetIndex(a, indice)] = GetCle(fils_droit, 0);
     //Puis supprimer de façons recursive
+    Arbre234 context_parent = GetParent();
+    int context_niveau = GetNiveau();
     SetParent(a);
+    IncrNiveau();
     Detruire_Cle(fils_droit,  GetCle(fils_droit, 0));
+    SetNiveau(context_niveau);
+    SetParent(context_parent);
     // a->fils[GetIndex(a, indice+1)] = fils_droit;
     return 1;
   }
@@ -647,6 +775,8 @@ int RemplaceDroite(Arbre234 a, int indice){
 
 // Renvoie 1 si l'emprunt a ete effectue 0 sinon
 int EmpruntGaucheInterne(Arbre234 *parent, int cle){
+  printf("BOAT\n\n");
+  afficher_arbre((*parent), 0);
   int i = 0;
   while(i < (*parent)->t-1 && GetCle((*parent), i) < cle){
     i++;
@@ -655,7 +785,7 @@ int EmpruntGaucheInterne(Arbre234 *parent, int cle){
   //Ici i vaut l'index de la premiere des cles egal ou superieur a cle
   if(i <= (*parent)->t-1){
     //Il n'y a pas de frere gauche on ne peut rien emprunter
-    if(i == 0){
+    if(GetIndex((*parent), i) == GetIndex((*parent), 0)){
       return 0;
     }
     //Le nb de cle dans le frere est trop petit pour un emprunt en renvois 0
@@ -663,16 +793,27 @@ int EmpruntGaucheInterne(Arbre234 *parent, int cle){
       return 0;
     }
     //On recupere la cle max du fils gauche
-    int max_key = GetCle(GetFils((*parent), i-1), GetFils((*parent), i-1)->t-2);
+    int max_key = CleMax(GetFils((*parent), i-1));
+    // int max_key = GetCle(GetFils((*parent), i-1), GetFils((*parent), i-1)->t-2);
+
     //On enleve cette cle du fils gauche
     Arbre234 context_parent = GetParent();
+    int context_niveau = GetNiveau();
     SetParent((*parent));
-    Detruire_Cle((*parent)->fils[GetIndex((*parent), i-1)], GetCle(GetFils((*parent), i-1),GetFils((*parent), i-1)->t-2));
+    Detruire_Cle((*parent)->fils[GetIndex((*parent), i-1)], max_key);
     SetParent(context_parent);
+    SetNiveau(context_niveau);
     //On met la cle du parent dans le fils droit
-    (*parent)->fils[GetIndex((*parent), i)] = AddMinKeyToNoeud2(GetFils((*parent), i), (*parent)->cles[GetIndex((*parent), i-1)]);
+    int cle_parent = (*parent)->cles[GetIndex((*parent), i-1)];
     //On remplace la cle qu on a enlever au parent par le max du fils gauche
     (*parent)->cles[GetIndex((*parent), i-1)] = max_key;
+    ajouter_cle(&((*parent)->fils[GetIndex((*parent), i)]), cle_parent, GetNiveau(), (*parent));
+
+    // (*parent)->fils[GetIndex((*parent), i)] = AddMinKeyToNoeud2(GetFils((*parent), i), cle_parent);
+    // (*parent)->fils[GetIndex((*parent), i)] = AddMinKeyToNoeud2(GetFils((*parent), i), (*parent)->cles[GetIndex((*parent), i-1)]);
+    printf("\n\n BOAT apres \n\n");
+    afficher_arbre((*parent), 0);
+    printf("\n\n Finis \n\n");
     return 1;
   }
   return 0; //Operation echouer
@@ -680,6 +821,8 @@ int EmpruntGaucheInterne(Arbre234 *parent, int cle){
 
 // Renvoie 1 si l'emprunt a ete effectue 0 sinon
 int EmpruntDroitInterne(Arbre234 *parent, int cle){
+  printf("BITCHHHHHHHH\n\n");
+  afficher_arbre((*parent), 0);
   int i = 0;
   while(i < (*parent)->t-1 && GetCle((*parent), i) < cle){
     i++;
@@ -692,49 +835,108 @@ int EmpruntDroitInterne(Arbre234 *parent, int cle){
       return 0;
     }
     //On recupere la cle min du fils droit
-    int min_key = GetCle(GetFils((*parent), i+1), GetIndex(GetFils((*parent), i+1), 0));
+    int min_key = CleMin(GetFils((*parent), i+1));
+    // int min_key = GetCle(GetFils((*parent), i+1), GetIndex(GetFils((*parent), i+1), 0));
     //On enleve cette cle du fils droit
     Arbre234 context_parent = GetParent();
+    int context_niveau = GetNiveau();
     SetParent((*parent));
-    Detruire_Cle((*parent)->fils[GetIndex((*parent), i+1)], GetCle(GetFils((*parent), i+1),0));
+    Detruire_Cle((*parent)->fils[GetIndex((*parent), i+1)], min_key);
     SetParent(context_parent);
-    //On met la cle du parent dans le fils gauche
-    (*parent)->fils[GetIndex((*parent), i)] = AddMaxKeyToNoeud2(GetFils((*parent), i), (*parent)->cles[GetIndex((*parent), i)]);
+    SetNiveau(context_niveau);
 
-    // int sauv_cle = (*parent)->fils[GetIndex((*parent), i)]->cles[0];
-    // (*parent)->fils[GetIndex((*parent), i)]->cles[0]
-
+    int cle_parent = (*parent)->cles[GetIndex((*parent), i)];
     //On remplace la cle qu on a enlever au parent par le min du fils droit
     (*parent)->cles[GetIndex((*parent), i)] = min_key;
+
+    //On met la cle du parent dans le fils gauche
+    ajouter_cle(&((*parent)->fils[GetIndex((*parent), i)]), cle_parent, GetNiveau(), (*parent));
+
+    // (*parent)->fils[GetIndex((*parent), i)] = AddMinKeyToNoeud2(GetFils((*parent), i), cle_parent);
+    // (*parent)->fils[GetIndex((*parent), i)] = AddMaxKeyToNoeud2(GetFils((*parent), i), (*parent)->cles[GetIndex((*parent), i)]);
+    printf("\n\n BITCHHHHHHHH apres \n\n");
+    afficher_arbre((*parent), 0);
+    printf("\n\n Finis \n\n");
     return 1; //Operation reussis
+
   }
   return 0; //Operation echouer
 }
 
 void Detruire_Cle_Noeud_Interne (Arbre234 a, int cle){
   //Trouver l indice de la cle a supprimer
+  printf("HHH\n");
   int i = 0;
   while(i < a->t-1 && GetCle(a, i) != cle){
     i++;
   }
-  {
 
   // 3 cas possible
   if (RemplaceGauche(a, i)){
   } else if(RemplaceDroite(a, i)) {
   } else {
     if (a->t > 2){
+      printf("\n\n\n\n\n\n|==================[DEBUT]===============|\n\n\n");
+      printf("Arbre 0 :\n");
+      afficher_arbre(a, 0);
       //Sinon on fusionne les fils entourant la cle
-      a->fils[GetIndex(a, i+1)] = merge2noeud(GetFils(a, i), GetFils(a, i+1), cle);
+      a->fils[GetIndex(a, i)] = merge2noeud(GetFils(a, i), GetFils(a, i+1), cle);
       //On decale les fils qu il reste :
-      for (int j = i+1; j <= a->t-1; j++) {
-        a->fils[GetIndex(a, j-1)] = a->fils[GetIndex(a, j)];
+      printf("Arbre 1 :\n");
+      afficher_arbre(a, 0);
+      // Arbre234 buffer = a->fils[GetIndex(a, i)];
+      printf("\n\n");
+
+      if(a->t == 3){
+        //Cest des noeud3
+        if(i == 0){
+          Arbre234 buffer = a->fils[1];
+          a->fils[1] = a->fils[0];
+          a->fils[0] = buffer;
+        } else {
+          a->cles[1] = a->cles[0];
+
+          Arbre234 buffer = a->fils[2];
+          a->fils[2] = a->fils[1];
+          a->fils[1] = a->fils[0];
+          a->fils[0] = buffer;
+        }
+      } else {
+        //Cest des noeud4
+        if(i == 0){
+          a->cles[0] = a->cles[1];
+          a->cles[1] = a->cles[2];
+
+          Arbre234 buffer = a->fils[1];
+          a->fils[1] = a->fils[2];
+          a->fils[2] = a->fils[3];
+          a->fils[3] = buffer;
+        } else if(i == 1){
+          a->cles[1] = a->cles[2];
+
+          Arbre234 buffer = a->fils[2];
+          a->fils[2] = a->fils[3];
+          a->fils[3] = buffer;
+        }
       }
-      //Et on la supprime
-      a = SupprimeCle(a, cle);
+      a->t = a->t - 1 ;
+
+      printf("Arbre 2 :\n");
+      afficher_arbre(a, 0);
+
       //Et on supprime recursivement
+
+      Arbre234 context_parent = GetParent();
+      int context_niveau = GetNiveau();
       Detruire_Cle(a, cle);
+      SetParent(context_parent);
+      SetNiveau(context_niveau);
+
+      printf("\nArbre 3 :\n");
+      afficher_arbre(a, 0);
+      printf("\n\n\n|==================[FIN]===============|\n\n\n\n\n\n");
     } else {
+      printf("GOOO\n");
       if(a->t <= 2){
         if(EmpruntGaucheInterne(&parent, cle)){
           a = SupprimeCle(a, cle);
@@ -742,7 +944,6 @@ void Detruire_Cle_Noeud_Interne (Arbre234 a, int cle){
           a = SupprimeCle(a, cle);
         }
       }
-    }
     }
   }
 }
@@ -757,6 +958,8 @@ Arbre234 Fusion(Arbre234 *a){
       free((*a)->fils[0]);
       free((*a)->fils[3]);
 
+      free(f_gauche->fils[0]);
+      free(f_droit->fils[0]);
 
       free(f_gauche->fils[3]);
       free(f_droit->fils[3]);
@@ -780,14 +983,95 @@ Arbre234 Fusion(Arbre234 *a){
   return (*a);
 }
 
+void Equilibrage(Arbre234 a, int index){
+  printf("YO\n");
+  if(index == a->t-1){
+    if(NombreCles(GetFils(a, index-1)) > NombreCles(GetFils(a, index))){
+      printf("YO1\n");
+      printf("Avant\n\n\n");
+      afficher_arbre(a,0);
+      int max_key = CleMax(GetFils(a, index-1));
+      Arbre234 context_parent = GetParent();
+      int context_niveau = GetNiveau();
+      Detruire_Cle(a->fils[GetIndex(a, index-1)], max_key);
+      SetParent(context_parent);
+      SetNiveau(context_niveau);
+
+      int cle_act = GetCle(a, index-1);
+      a->cles[GetIndex(a, index-1)] = max_key;
+
+      ajouter_cle(&(a->fils[GetIndex(a, index)]), cle_act, GetNiveau(), a);
+      printf("Apres\n\n\n");
+      afficher_arbre(a,0);
+    }
+  } else if(GetIndex(a, index) == GetIndex(a, 0)) {
+    if(NombreCles(GetFils(a, index+1)) > NombreCles(GetFils(a, index))){
+      printf("YO2\n");
+      printf("Avant\n\n\n");
+      afficher_arbre(a,0);
+      int min_key = CleMin(GetFils(a, index+1));
+      Arbre234 context_parent = GetParent();
+      int context_niveau = GetNiveau();
+      Detruire_Cle(a->fils[GetIndex(a, index+1)], min_key);
+      afficher_arbre(a,0);
+      SetParent(context_parent);
+      SetNiveau(context_niveau);
+
+      int cle_act = GetCle(a, index);
+      a->cles[GetIndex(a, index)] = min_key;
+
+      ajouter_cle(&(a->fils[GetIndex(a, index)]), cle_act, GetNiveau(), a);
+      printf("Apres\n\n\n");
+      afficher_arbre(a,0);
+      printf("\n\n\n\n\n");
+    }
+  } else {
+    if(NombreCles(GetFils(a, index-1)) > NombreCles(GetFils(a, index))){
+      printf("YO31\n");
+      int max_key = CleMax(GetFils(a, index-1));
+      Arbre234 context_parent = GetParent();
+      int context_niveau = GetNiveau();
+      Detruire_Cle(a->fils[GetIndex(a, index-1)], max_key);
+      SetParent(context_parent);
+      SetNiveau(context_niveau);
+
+      int cle_act = GetCle(a, index-1);
+      a->cles[GetIndex(a, index-1)] = max_key;
+
+      ajouter_cle(&(a->fils[GetIndex(a, index)]), cle_act, GetNiveau(), a);
+    } else if(NombreCles(GetFils(a, index+1)) > NombreCles(GetFils(a, index))){
+      printf("YO32\n");
+      int min_key = CleMin(GetFils(a, index+1));
+      Arbre234 context_parent = GetParent();
+      int context_niveau = GetNiveau();
+      Detruire_Cle(a->fils[GetIndex(a, index+1)], min_key);
+      SetParent(context_parent);
+      SetNiveau(context_niveau);
+
+      int cle_act = GetCle(a, index);
+      a->cles[GetIndex(a, index)] = min_key;
+
+      ajouter_cle(&(a->fils[GetIndex(a, index)]), cle_act, GetNiveau(), a);
+    }
+  }
+}
+
 void Detruire_Cle (Arbre234 a, int cle)
 {
   /*
     retirer la cle de l'arbre a
   */
-  //On est dans la racine
+  //Fusion des noeuds si nous somme dans un cas aberant pour un arbre 234
   a = Fusion(&a);
-  //On regarde si l'arbre actuel possede la cle:
+  //Si on est a la racine on verifie que la cle est presente pour la supprime
+  if(GetParent()==NULL){
+    SetNiveau(0);
+    if(RechercherCle(a, cle)==NULL){
+      return ;
+    }
+  }
+
+  //On cherche l'indice a partir du quel les cle sont superieur ou egale a la cle rechercher
   int i = 0;
   while(i < a->t-1 && GetCle(a, i) < cle){
     i++;
@@ -802,17 +1086,19 @@ void Detruire_Cle (Arbre234 a, int cle)
     }
   } else {
     if(!EstFeuille(a)){
+      //Partie equilibrage
+      Equilibrage(a, i);
+
       SetParent(a);
+      IncrNiveau();
       //Si sa n est pas une feuille on continue a descendre pour le supprime
       Detruire_Cle(GetFils(a, i), cle);
     }
   }
   SetParent(NULL);
+  SetNiveau(0);
   return ;
 }
-
-
-
 
 int main (int argc, char **argv)
 {
@@ -916,6 +1202,10 @@ int main (int argc, char **argv)
 
   printf("Destruction clé n°%d\n", 50);
   Detruire_Cle (a, 50);
+  afficher_arbre(a,0);
+
+  printf("Destruction clé n°%d\n", 10);
+  Detruire_Cle (a, 10);
   afficher_arbre(a,0);
 
 
