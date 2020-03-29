@@ -1,5 +1,5 @@
 
-#define MAX_FILE_SIZE       32
+#define MAX_FILE_SIZE       64
 
 
 typedef struct {
@@ -51,4 +51,3 @@ Post-condition: ajoute le noeud p a la tete de f.
 Effets de bord: f est modifiée
 */
 int enfiler (pfile_t f, Arbre234 p) ;
-
