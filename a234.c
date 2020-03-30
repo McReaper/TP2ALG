@@ -711,7 +711,6 @@ void Detruire_Cle_Feuille (Arbre234 a, int cle){
         if(MergeGauche(&a, cle)){
           a = SupprimeCle(a, cle);
         } else if(MergeDroite(&a, cle)){
-          afficher_arbre(a, cle);
           a = SupprimeCle(a, cle);
         }
       }
