@@ -1153,5 +1153,5 @@ int main (int argc, char **argv)
   Detruire_Cle (a, 10);
   afficher_arbre(a,0);
 
-  detruire_arbre(a);
+  //detruire_arbre(a);
 }
