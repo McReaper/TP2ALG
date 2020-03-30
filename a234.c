@@ -51,10 +51,10 @@ void detruire_arbre(Arbre234 a){
 
   if (a != NULL) {
 
-    detruire_arbre(a->fils[0]);
-    detruire_arbre(a->fils[1]);
-    detruire_arbre(a->fils[2]);
-    detruire_arbre(a->fils[3]);
+    detruire_arbre(GetFils(a,0));
+    detruire_arbre(GetFils(a,1));
+    detruire_arbre(GetFils(a,2));
+    detruire_arbre(GetFils(a,3));
 
     free(a);
   }
@@ -1153,5 +1153,5 @@ int main (int argc, char **argv)
   Detruire_Cle (a, 10);
   afficher_arbre(a,0);
 
-  //detruire_arbre(a);
+  detruire_arbre(a);
 }
